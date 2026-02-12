@@ -295,12 +295,7 @@
             padding: 15px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            touch-action: manipulation;
-        }
-
-        .character-card:hover {
-            transform: translateY(-3px);
+            /* Removed transition and hover effects that interfere with touch scrolling */
         }
 
         .character-image {
@@ -347,8 +342,7 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s;
-            touch-action: manipulation;
+            /* Removed transition that interferes with touch scrolling */
         }
 
         .btn-buy {
@@ -788,9 +782,11 @@
                 this.sounds = {};
                 this.voiceLines = {};
                 this.bgMusic = null;
+                this.gameOverSound = null;
                 this.initAudioContext();
                 this.loadSounds();
                 this.loadVoiceLines();
+                this.loadGameOverSound();
             }
 
             initAudioContext() {
@@ -806,7 +802,6 @@
                 this.sounds = {
                     jump: this.createOscillator(400, 0.1),
                     coin: this.createOscillator(800, 0.1),
-                    gameOver: this.createOscillator(200, 0.5),
                     powerUp: this.createOscillator(600, 0.2),
                     respawn: this.createOscillator(1000, 0.3),
                     shield: this.createOscillator(300, 0.3)
@@ -840,6 +835,24 @@
                     // Load the audio
                     this.voiceLines[character.id].audio.load();
                 });
+            }
+
+            loadGameOverSound() {
+                // Load game over sound
+                this.gameOverSound = new Audio();
+                this.gameOverSound.src = 'assets/sounds/game_over.mp3';
+                
+                this.gameOverSound.addEventListener('canplaythrough', () => {
+                    console.log('Game over sound loaded');
+                });
+                
+                this.gameOverSound.addEventListener('error', (e) => {
+                    console.log('Error loading game over sound:', e);
+                    // Fallback to oscillator if MP3 fails to load
+                    this.sounds.gameOver = this.createOscillator(200, 0.5);
+                });
+                
+                this.gameOverSound.load();
             }
 
             createOscillator(frequency, duration) {
@@ -885,7 +898,27 @@
             }
 
             play(soundName) {
-                if (this.sounds[soundName]) {
+                if (soundName === 'gameOver') {
+                    // Play the actual game over MP3 if available
+                    if (this.gameOverSound && this.soundEnabled) {
+                        try {
+                            this.gameOverSound.currentTime = 0;
+                            this.gameOverSound.play().catch(e => {
+                                console.log('Error playing game over sound:', e);
+                                // Fallback to oscillator if MP3 fails to play
+                                if (this.sounds.gameOver) {
+                                    this.sounds.gameOver();
+                                }
+                            });
+                        } catch (e) {
+                            console.log('Error playing game over sound:', e);
+                            // Fallback to oscillator
+                            if (this.sounds.gameOver) {
+                                this.sounds.gameOver();
+                            }
+                        }
+                    }
+                } else if (this.sounds[soundName]) {
                     this.sounds[soundName]();
                 }
             }
