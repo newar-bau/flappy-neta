@@ -1100,12 +1100,23 @@
             setupGameControls() {
                 // Flag to prevent double jump
                 let isJumping = false;
+                let jumpTimeout = null;
                 
                 const handleJump = (e) => {
+                    // Prevent default behavior and stop propagation
                     e.preventDefault();
+                    e.stopPropagation();
                     
+                    // If already jumping, ignore this event
                     if (isJumping) return;
+                    
+                    // Set jumping flag
                     isJumping = true;
+                    
+                    // Clear any existing timeout
+                    if (jumpTimeout) {
+                        clearTimeout(jumpTimeout);
+                    }
                     
                     if (this.state === GameState.READY) {
                         // Start the game
@@ -1121,22 +1132,28 @@
                         this.soundManager.play('jump');
                     }
                     
-                    // Reset jump flag after a short delay
-                    setTimeout(() => {
+                    // Reset jump flag after a longer delay to prevent double jumps
+                    jumpTimeout = setTimeout(() => {
                         isJumping = false;
-                    }, 100);
+                    }, 200);
                 };
                 
-                // Touch events for mobile
-                this.canvas.addEventListener('touchstart', handleJump, { passive: false });
+                // Detect if the device supports touch
+                const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
                 
-                // Click events for desktop
-                this.canvas.addEventListener('click', handleJump);
+                if (isTouchDevice) {
+                    // For touch devices, only use touch events
+                    this.canvas.addEventListener('touchstart', handleJump, { passive: false });
+                } else {
+                    // For desktop, use click events
+                    this.canvas.addEventListener('click', handleJump);
+                }
                 
-                // Keyboard controls
+                // Keyboard controls for all devices
                 document.addEventListener('keydown', (e) => {
                     if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
                         e.preventDefault();
+                        e.stopPropagation();
                         handleJump(e);
                     }
                 });
@@ -1847,7 +1864,22 @@
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
                 
-              
+                // Draw shield if active
+                if (this.shieldActive) {
+                    ctx.strokeStyle = 'rgba(76, 175, 80, 0.7)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size / 2 + 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Draw invincibility effect
+                if (this.invincible) {
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size / 2 + 10, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 
                 ctx.restore();
             }
