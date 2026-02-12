@@ -19,7 +19,8 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            touch-action: none;
+            /* Changed from touch-action: none to allow scrolling in shop */
+            touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
@@ -239,6 +240,7 @@
             z-index: 25;
             padding: 20px;
             display: none;
+            /* Changed from overflow: hidden to allow scrolling */
             overflow: hidden;
         }
 
@@ -282,7 +284,11 @@
             overflow-y: auto;
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
+            /* Added explicit touch action for vertical scrolling */
             touch-action: pan-y;
+            /* Added to ensure proper scrolling on iOS */
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .characters-grid::-webkit-scrollbar {
@@ -591,6 +597,25 @@
             z-index: 5;
             display: none;
         }
+
+        /* Added swipe indicator for shop */
+        .swipe-hint {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            animation: swipeHint 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes swipeHint {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
     </style>
 </head>
 <body>
@@ -647,6 +672,7 @@
 
         <!-- Shop Screen -->
         <div class="shop-screen" id="shopScreen">
+            <div class="swipe-hint"></div>
             <div class="shop-content">
                 <div class="shop-header">
                     <div class="shop-title">Character Shop</div>
@@ -1080,6 +1106,37 @@
                         this.handleTap();
                     }
                 });
+                
+                // Shop scroll handling
+                this.setupShopScrolling();
+            }
+
+            setupShopScrolling() {
+                const charactersGrid = document.getElementById('charactersGrid');
+                let startY = 0;
+                let currentY = 0;
+                let isScrolling = false;
+                
+                // Touch events for mobile scrolling
+                charactersGrid.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].pageY;
+                    isScrolling = true;
+                }, { passive: true });
+                
+                charactersGrid.addEventListener('touchmove', (e) => {
+                    if (!isScrolling) return;
+                    
+                    currentY = e.touches[0].pageY;
+                    const diff = startY - currentY;
+                    
+                    // Scroll the container
+                    charactersGrid.scrollTop += diff;
+                    startY = currentY;
+                }, { passive: true });
+                
+                charactersGrid.addEventListener('touchend', () => {
+                    isScrolling = false;
+                }, { passive: true });
             }
 
             handleTap() {
@@ -1776,8 +1833,6 @@
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
                 
-                
-                
                 ctx.restore();
             }
         }
@@ -1914,8 +1969,8 @@
             const game = new FlappyNeta();
         });
 
-        // Prevent default touch behavior to avoid scrolling
-        document.addEventListener('touchmove', (e) => {
+        // Prevent default touch behavior only for game canvas, not shop
+        document.getElementById('gameCanvas').addEventListener('touchmove', (e) => {
             e.preventDefault();
         }, { passive: false });
     </script>
