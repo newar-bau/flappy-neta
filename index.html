@@ -111,6 +111,10 @@
             background: linear-gradient(to bottom, #FF9800, #F57C00);
         }
 
+        .btn-settings {
+            background: linear-gradient(to bottom, #9C27B0, #7B1FA2);
+        }
+
         .stats-container {
             margin-top: 30px;
             background: rgba(255, 255, 255, 0.9);
@@ -147,6 +151,83 @@
             object-fit: cover;
         }
 
+        /* Settings Screen */
+        .settings-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+            z-index: 25;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .settings-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .setting-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .setting-toggle {
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .setting-toggle.active {
+            background: #4CAF50;
+        }
+
+        .setting-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .setting-toggle.active .setting-toggle-slider {
+            transform: translateX(30px);
+        }
+
         /* Shop Screen */
         .shop-screen {
             position: absolute;
@@ -159,7 +240,6 @@
             padding: 20px;
             display: none;
             overflow: hidden;
-            touch-action: pan-y;
         }
 
         .shop-content {
@@ -202,6 +282,7 @@
             overflow-y: auto;
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
 
         .characters-grid::-webkit-scrollbar {
@@ -215,6 +296,7 @@
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
+            touch-action: manipulation;
         }
 
         .character-card:hover {
@@ -266,6 +348,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.2s;
+            touch-action: manipulation;
         }
 
         .btn-buy {
@@ -478,39 +561,6 @@
             }
         }
 
-        /* Sound control buttons */
-        .sound-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 100;
-        }
-
-        .sound-control {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.2s;
-        }
-
-        .sound-control:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: scale(1.1);
-        }
-
-        .sound-control:active {
-            transform: scale(0.95);
-        }
-
         /* Special ability effects */
         .invincibility-effect {
             position: absolute;
@@ -556,12 +606,6 @@
         <div class="coin-magnet-effect" id="coinMagnetEffect"></div>
         <div class="shield-effect" id="shieldEffect"></div>
         
-        <!-- Sound Controls -->
-        <div class="sound-controls">
-            <div class="sound-control" id="musicControl" title="Background Music">🎵</div>
-            <div class="sound-control" id="soundControl" title="Sound Effects">🔊</div>
-        </div>
-        
         <!-- Main Menu -->
         <div class="menu-screen" id="menuScreen">
             <div class="game-title">Flappy Netā</div>
@@ -571,6 +615,7 @@
             <div class="menu-buttons">
                 <button class="btn" id="playBtn">Play</button>
                 <button class="btn btn-shop" id="shopBtn">Shop</button>
+                <button class="btn btn-settings" id="settingsBtn">Settings</button>
             </div>
             <div class="stats-container">
                 <div class="stat-item">
@@ -582,6 +627,27 @@
                     <span id="totalCoins">0</span>
                 </div>
             </div>
+            <div class="disclaimer">This game is for entertainment and parody purposes only.</div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div class="settings-screen" id="settingsScreen">
+            <div class="settings-title">Settings</div>
+            <div class="settings-options">
+                <div class="setting-item">
+                    <div class="setting-label">Music</div>
+                    <div class="setting-toggle" id="musicToggle">
+                        <div class="setting-toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">Sound Effects</div>
+                    <div class="setting-toggle" id="soundToggle">
+                        <div class="setting-toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-back" id="settingsBackBtn" style="margin-top: 30px;">Back</button>
             <div class="disclaimer">This game is for entertainment and parody purposes only.</div>
         </div>
 
@@ -656,7 +722,8 @@
             READY: 'ready',
             PLAYING: 'playing',
             GAME_OVER: 'game_over',
-            SHOP: 'shop'
+            SHOP: 'shop',
+            SETTINGS: 'settings'
         };
 
         // Characters Data with special powers
@@ -947,19 +1014,23 @@
                 // Menu buttons
                 document.getElementById('playBtn').addEventListener('click', () => this.startGame());
                 document.getElementById('shopBtn').addEventListener('click', () => this.openShop());
+                document.getElementById('settingsBtn').addEventListener('click', () => this.openSettings());
                 document.getElementById('backBtn').addEventListener('click', () => this.closeShop());
+                document.getElementById('settingsBackBtn').addEventListener('click', () => this.closeSettings());
                 document.getElementById('restartBtn').addEventListener('click', () => this.restartGame());
                 document.getElementById('menuBtn').addEventListener('click', () => this.backToMenu());
                 
-                // Sound controls
-                document.getElementById('soundControl').addEventListener('click', () => {
-                    const enabled = this.soundManager.toggleSound();
-                    document.getElementById('soundControl').textContent = enabled ? '🔊' : '🔇';
+                // Settings toggles
+                document.getElementById('musicToggle').addEventListener('click', () => {
+                    const toggle = document.getElementById('musicToggle');
+                    const enabled = this.soundManager.toggleMusic();
+                    toggle.classList.toggle('active', enabled);
                 });
                 
-                document.getElementById('musicControl').addEventListener('click', () => {
-                    const enabled = this.soundManager.toggleMusic();
-                    document.getElementById('musicControl').textContent = enabled ? '🎵' : '🎶';
+                document.getElementById('soundToggle').addEventListener('click', () => {
+                    const toggle = document.getElementById('soundToggle');
+                    const enabled = this.soundManager.toggleSound();
+                    toggle.classList.toggle('active', enabled);
                 });
                 
                 // Game controls
@@ -1074,6 +1145,7 @@
                 // Show game UI
                 document.getElementById('menuScreen').style.display = 'none';
                 document.getElementById('shopScreen').style.display = 'none';
+                document.getElementById('settingsScreen').style.display = 'none';
                 document.getElementById('gameUI').style.display = 'block';
                 document.getElementById('gameOverScreen').style.display = 'none';
                 document.getElementById('tapToBegin').style.display = 'block';
@@ -1122,6 +1194,22 @@
                 document.getElementById('menuScreen').style.display = 'flex';
             }
 
+            openSettings() {
+                this.state = GameState.SETTINGS;
+                document.getElementById('menuScreen').style.display = 'none';
+                document.getElementById('settingsScreen').style.display = 'flex';
+                
+                // Update toggle states
+                document.getElementById('musicToggle').classList.toggle('active', this.soundManager.musicEnabled);
+                document.getElementById('soundToggle').classList.toggle('active', this.soundManager.soundEnabled);
+            }
+
+            closeSettings() {
+                this.state = GameState.MENU;
+                document.getElementById('settingsScreen').style.display = 'none';
+                document.getElementById('menuScreen').style.display = 'flex';
+            }
+
             renderShop() {
                 const grid = document.getElementById('charactersGrid');
                 grid.innerHTML = '';
@@ -1154,6 +1242,7 @@
                 // Add event listeners to character buttons
                 document.querySelectorAll('.btn-character').forEach(btn => {
                     btn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent event from bubbling up to the scroll container
                         const characterId = e.target.dataset.character;
                         const character = CHARACTERS.find(c => c.id === characterId);
                         
@@ -1654,7 +1743,7 @@
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
                 
-               
+                
                 
                 ctx.restore();
             }
