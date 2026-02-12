@@ -1,2021 +1,2016 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flappy Netā - Nepali Politics Game</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-        }
-
-        .game-container {
-            position: relative;
-            width: 100%;
-            max-width: 360px;
-            height: 100vh;
-            max-height: 640px;
-            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-
-        #gameCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            touch-action: none;
-        }
-
-        /* Main Menu */
-        .menu-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            padding: 20px;
-            touch-action: none;
-        }
-
-        .game-title {
-            font-size: 36px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 250px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            background: linear-gradient(to bottom, #4CAF50, #45a049);
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s;
-            text-align: center;
-            touch-action: manipulation;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-shop {
-            background: linear-gradient(to bottom, #FF9800, #F57C00);
-        }
-
-        .btn-settings {
-            background: linear-gradient(to bottom, #9C27B0, #7B1FA2);
-        }
-
-        .stats-container {
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .stat-item {
-            margin: 5px 0;
-            font-size: 16px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .character-preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #fff;
-            margin: 0 auto 15px;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .character-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Settings Screen */
-        .settings-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
-            z-index: 25;
-            padding: 20px;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-        }
-
-        .settings-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            margin-bottom: 40px;
-        }
-
-        .settings-options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .setting-label {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .setting-toggle {
-            width: 60px;
-            height: 30px;
-            background: #ccc;
-            border-radius: 15px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .setting-toggle.active {
-            background: #4CAF50;
-        }
-
-        .setting-toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-
-        .setting-toggle.active .setting-toggle-slider {
-            transform: translateX(30px);
-        }
-
-        /* Shop Screen */
-        .shop-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #87CEEB, #98D8E8);
-            z-index: 25;
-            padding: 20px;
-            display: none;
-            overflow: hidden;
-            touch-action: none;
-        }
-
-        .shop-content {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .shop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-
-        .shop-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        .coin-display {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .characters-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 70px;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
-        }
-
-        .characters-grid::-webkit-scrollbar {
-            display: none;
-        }
-
-        .character-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .character-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            overflow: hidden;
-            border: 2px solid #ddd;
-        }
-
-        .character-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .character-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .character-power {
-            font-size: 12px;
-            color: #555;
-            margin-bottom: 10px;
-            min-height: 30px;
-        }
-
-        .character-price {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            margin-bottom: 10px;
-            color: #666;
-        }
-
-        .btn-character {
-            padding: 8px 15px;
-            font-size: 14px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            touch-action: manipulation;
-        }
-
-        .btn-buy {
-            background: linear-gradient(to bottom, #4CAF50, #45a049);
-            color: white;
-        }
-
-        .btn-select {
-            background: linear-gradient(to bottom, #2196F3, #1976D2);
-            color: white;
-        }
-
-        .btn-selected {
-            background: linear-gradient(to bottom, #9E9E9E, #757575);
-            color: white;
-            cursor: default;
-        }
-
-        .shop-footer {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-        }
-
-        .btn-back {
-            width: 100%;
-            background: linear-gradient(to bottom, #f44336, #d32f2f);
-        }
-
-        /* Game Screen UI */
-        .game-ui {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 15;
-        }
-
-        .score-display {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .coin-counter {
-            position: absolute;
-            top: 60px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .power-indicator {
-            position: absolute;
-            top: 100px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #FF5722;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 5px 10px;
-            border-radius: 15px;
-        }
-
-        .voice-indicator {
-            position: absolute;
-            top: 140px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #9C27B0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 5px 10px;
-            border-radius: 15px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .voice-indicator.show {
-            opacity: 1;
-        }
-
-        .coin-indicator {
-            position: absolute;
-            top: 180px;
-            left: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .coin-indicator.show {
-            opacity: 1;
-        }
-
-        .tap-to-begin {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-            animation: fadeInOut 2s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .game-over-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 30;
-            padding: 20px;
-        }
-
-        .game-over-title {
-            font-size: 48px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            animation: gameOverPulse 1s infinite;
-        }
-
-        @keyframes gameOverPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .final-score {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-
-        .coins-earned {
-            font-size: 20px;
-            color: #FFD700;
-            margin-bottom: 30px;
-        }
-
-        .game-over-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 200px;
-        }
-
-        .disclaimer {
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 0 10px;
-        }
-
-        /* Responsive adjustments */
-        @media (max-height: 640px) {
-            .game-container {
-                max-height: 100vh;
-            }
-        }
-
-        @media (min-height: 641px) {
-            .game-container {
-                height: 640px;
-                max-height: 90vh;
-            }
-        }
-
-        /* Special ability effects */
-        .invincibility-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0) 70%);
-            pointer-events: none;
-            z-index: 5;
-            display: none;
-        }
-
-        .coin-magnet-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(33,150,243,0.2) 0%, rgba(33,150,243,0) 70%);
-            pointer-events: none;
-            z-index: 5;
-            display: none;
-        }
-
-        .shield-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(76,175,80,0.2) 0%, rgba(76,175,80,0) 70%);
-            pointer-events: none;
-            z-index: 5;
-            display: none;
-        }
-
-        /* Added swipe indicator for shop */
-        .swipe-hint {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 5px;
-            animation: swipeHint 2s infinite;
-            z-index: 10;
-        }
-
-        @keyframes swipeHint {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-    </style>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flappy Netā - Nepali Politics Game</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+overflow: hidden;
+touch-action: manipulation;
+user-select: none;
+-webkit-user-select: none;
+-webkit-touch-callout: none;
+position: fixed;
+width: 100%;
+height: 100%;
+}
+
+.game-container {
+position: relative;
+width: 100%;
+max-width: 360px;
+height: 100vh;
+max-height: 640px;
+background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+overflow: hidden;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#gameCanvas {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+display: block;
+image-rendering: pixelated;
+image-rendering: crisp-edges;
+touch-action: none;
+}
+
+/* Main Menu */
+.menu-screen {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+z-index: 20;
+padding: 20px;
+touch-action: none;
+}
+
+.game-title {
+font-size: 36px;
+font-weight: bold;
+color: #fff;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+margin-bottom: 30px;
+text-align: center;
+}
+
+.menu-buttons {
+display: flex;
+flex-direction: column;
+gap: 15px;
+width: 100%;
+max-width: 250px;
+}
+
+.btn {
+padding: 15px 30px;
+font-size: 18px;
+font-weight: bold;
+color: #fff;
+background: linear-gradient(to bottom, #4CAF50, #45a049);
+border: none;
+border-radius: 30px;
+cursor: pointer;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+transition: all 0.2s;
+text-align: center;
+touch-action: manipulation;
+}
+
+.btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+transform: translateY(0);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-shop {
+background: linear-gradient(to bottom, #FF9800, #F57C00);
+}
+
+.btn-settings {
+background: linear-gradient(to bottom, #9C27B0, #7B1FA2);
+}
+
+.stats-container {
+margin-top: 30px;
+background: rgba(255, 255, 255, 0.9);
+padding: 15px 25px;
+border-radius: 15px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+text-align: center;
+}
+
+.stat-item {
+margin: 5px 0;
+font-size: 16px;
+color: #333;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 5px;
+}
+
+.character-preview {
+width: 80px;
+height: 80px;
+border-radius: 50%;
+background: #fff;
+margin: 0 auto 15px;
+border: 3px solid #fff;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+overflow: hidden;
+}
+
+.character-preview img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+/* Settings Screen */
+.settings-screen {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+z-index: 25;
+padding: 20px;
+display: none;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+touch-action: none;
+}
+
+.settings-title {
+font-size: 28px;
+font-weight: bold;
+color: #fff;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+margin-bottom: 40px;
+}
+
+.settings-options {
+display: flex;
+flex-direction: column;
+gap: 20px;
+width: 100%;
+max-width: 300px;
+}
+
+.setting-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: rgba(255, 255, 255, 0.9);
+padding: 15px 20px;
+border-radius: 15px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.setting-label {
+font-size: 16px;
+font-weight: bold;
+color: #333;
+}
+
+.setting-toggle {
+width: 60px;
+height: 30px;
+background: #ccc;
+border-radius: 15px;
+position: relative;
+cursor: pointer;
+transition: background 0.3s;
+}
+
+.setting-toggle.active {
+background: #4CAF50;
+}
+
+.setting-toggle-slider {
+position: absolute;
+top: 3px;
+left: 3px;
+width: 24px;
+height: 24px;
+background: white;
+border-radius: 50%;
+transition: transform 0.3s;
+}
+
+.setting-toggle.active .setting-toggle-slider {
+transform: translateX(30px);
+}
+
+/* Shop Screen */
+.shop-screen {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(to bottom, #87CEEB, #98D8E8);
+z-index: 25;
+padding: 20px;
+display: none;
+overflow: hidden;
+touch-action: none;
+}
+
+.shop-content {
+height: 100%;
+display: flex;
+flex-direction: column;
+}
+
+.shop-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+flex-shrink: 0;
+}
+
+.shop-title {
+font-size: 24px;
+font-weight: bold;
+color: #fff;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.coin-display {
+display: flex;
+align-items: center;
+gap: 5px;
+background: rgba(255, 255, 255, 0.9);
+padding: 8px 15px;
+border-radius: 20px;
+font-weight: bold;
+color: #333;
+}
+
+.characters-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 15px;
+flex: 1;
+overflow-y: auto;
+padding-bottom: 70px;
+-webkit-overflow-scrolling: touch;
+touch-action: pan-y;
+}
+
+.characters-grid::-webkit-scrollbar {
+display: none;
+}
+
+.character-card {
+background: rgba(255, 255, 255, 0.9);
+border-radius: 15px;
+padding: 15px;
+text-align: center;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.character-image {
+width: 80px;
+height: 80px;
+border-radius: 50%;
+margin: 0 auto 10px;
+overflow: hidden;
+border: 2px solid #ddd;
+}
+
+.character-image img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.character-name {
+font-weight: bold;
+margin-bottom: 5px;
+color: #333;
+}
+
+.character-power {
+font-size: 12px;
+color: #555;
+margin-bottom: 10px;
+min-height: 30px;
+}
+
+.character-price {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 5px;
+margin-bottom: 10px;
+color: #666;
+}
+
+.btn-character {
+padding: 8px 15px;
+font-size: 14px;
+border: none;
+border-radius: 20px;
+cursor: pointer;
+font-weight: bold;
+touch-action: manipulation;
+}
+
+.btn-buy {
+background: linear-gradient(to bottom, #4CAF50, #45a049);
+color: white;
+}
+
+.btn-select {
+background: linear-gradient(to bottom, #2196F3, #1976D2);
+color: white;
+}
+
+.btn-selected {
+background: linear-gradient(to bottom, #9E9E9E, #757575);
+color: white;
+cursor: default;
+}
+
+.shop-footer {
+position: absolute;
+bottom: 20px;
+left: 20px;
+right: 20px;
+}
+
+.btn-back {
+width: 100%;
+background: linear-gradient(to bottom, #f44336, #d32f2f);
+}
+
+/* Game Screen UI */
+.game-ui {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 15;
+}
+
+.score-display {
+position: absolute;
+top: 20px;
+left: 50%;
+transform: translateX(-50%);
+font-size: 32px;
+font-weight: bold;
+color: #fff;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.coin-counter {
+position: absolute;
+top: 60px;
+left: 20px;
+display: flex;
+align-items: center;
+gap: 5px;
+font-size: 18px;
+font-weight: bold;
+color: #FFD700;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.power-indicator {
+position: absolute;
+top: 100px;
+left: 20px;
+display: flex;
+align-items: center;
+gap: 5px;
+font-size: 14px;
+font-weight: bold;
+color: #FF5722;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+background: rgba(255, 255, 255, 0.7);
+padding: 5px 10px;
+border-radius: 15px;
+}
+
+.voice-indicator {
+position: absolute;
+top: 140px;
+left: 20px;
+display: flex;
+align-items: center;
+gap: 5px;
+font-size: 16px;
+font-weight: bold;
+color: #9C27B0;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+background: rgba(255, 255, 255, 0.7);
+padding: 5px 10px;
+border-radius: 15px;
+opacity: 0;
+transition: opacity 0.3s;
+}
+
+.voice-indicator.show {
+opacity: 1;
+}
+
+.coin-indicator {
+position: absolute;
+top: 180px;
+left: 20px;
+font-size: 18px;
+font-weight: bold;
+color: #FFD700;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+opacity: 0;
+transition: opacity 0.3s;
+}
+
+.coin-indicator.show {
+opacity: 1;
+}
+
+.tap-to-begin {
+position: absolute;
+bottom: 100px;
+left: 50%;
+transform: translateX(-50%);
+font-size: 20px;
+font-weight: bold;
+color: #fff;
+text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+animation: fadeInOut 2s infinite;
+pointer-events: none;
+}
+
+@keyframes fadeInOut {
+0%, 100% { opacity: 0.5; }
+50% { opacity: 1; }
+}
+
+.game-over-screen {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.7);
+display: none;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+z-index: 30;
+padding: 20px;
+}
+
+.game-over-title {
+font-size: 48px;
+font-weight: bold;
+color: #fff;
+margin-bottom: 20px;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+animation: gameOverPulse 1s infinite;
+}
+
+@keyframes gameOverPulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.final-score {
+font-size: 24px;
+color: #fff;
+margin-bottom: 10px;
+}
+
+.coins-earned {
+font-size: 20px;
+color: #FFD700;
+margin-bottom: 30px;
+}
+
+.game-over-buttons {
+display: flex;
+flex-direction: column;
+gap: 15px;
+width: 100%;
+max-width: 200px;
+}
+
+.disclaimer {
+position: absolute;
+bottom: 10px;
+left: 0;
+width: 100%;
+text-align: center;
+font-size: 10px;
+color: rgba(255, 255, 255, 0.7);
+padding: 0 10px;
+}
+
+/* Responsive adjustments */
+@media (max-height: 640px) {
+.game-container {
+max-height: 100vh;
+}
+}
+
+@media (min-height: 641px) {
+.game-container {
+height: 640px;
+max-height: 90vh;
+}
+}
+
+/* Special ability effects */
+.invincibility-effect {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0) 70%);
+pointer-events: none;
+z-index: 5;
+display: none;
+}
+
+.coin-magnet-effect {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: radial-gradient(circle, rgba(33,150,243,0.2) 0%, rgba(33,150,243,0) 70%);
+pointer-events: none;
+z-index: 5;
+display: none;
+}
+
+.shield-effect {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: radial-gradient(circle, rgba(76,175,80,0.2) 0%, rgba(76,175,80,0) 70%);
+pointer-events: none;
+z-index: 5;
+display: none;
+}
+
+/* Added swipe indicator for shop */
+.swipe-hint {
+position: absolute;
+top: 70px;
+left: 50%;
+transform: translateX(-50%);
+width: 40px;
+height: 5px;
+background: rgba(255, 255, 255, 0.5);
+border-radius: 5px;
+animation: swipeHint 2s infinite;
+z-index: 10;
+}
+
+@keyframes swipeHint {
+0%, 100% { opacity: 0.3; }
+50% { opacity: 0.8; }
+}
+</style></head>
 <body>
-    <div class="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div class="invincibility-effect" id="invincibilityEffect"></div>
-        <div class="coin-magnet-effect" id="coinMagnetEffect"></div>
-        <div class="shield-effect" id="shieldEffect"></div>
-        
-        <!-- Main Menu -->
-        <div class="menu-screen" id="menuScreen">
-            <div class="game-title">Flappy Netā</div>
-            <div class="character-preview" id="menuCharacterPreview">
-                <img src="assets/characters/kp_oli.png" alt="Character">
-            </div>
-            <div class="menu-buttons">
-                <button class="btn" id="playBtn">Play</button>
-                <button class="btn btn-shop" id="shopBtn">Shop</button>
-                <button class="btn btn-settings" id="settingsBtn">Settings</button>
-            </div>
-            <div class="stats-container">
-                <div class="stat-item">
-                    <span>🏆 Best Score:</span>
-                    <span id="bestScore">0</span>
-                </div>
-                <div class="stat-item">
-                    <span>🪙 Total Coins:</span>
-                    <span id="totalCoins">0</span>
-                </div>
-            </div>
-            <div class="disclaimer">This game is for entertainment and parody purposes only.</div>
-        </div>
-
-        <!-- Settings Screen -->
-        <div class="settings-screen" id="settingsScreen">
-            <div class="settings-title">Settings</div>
-            <div class="settings-options">
-                <div class="setting-item">
-                    <div class="setting-label">Music</div>
-                    <div class="setting-toggle" id="musicToggle">
-                        <div class="setting-toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-label">Sound Effects</div>
-                    <div class="setting-toggle" id="soundToggle">
-                        <div class="setting-toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-back" id="settingsBackBtn" style="margin-top: 30px;">Back</button>
-            <div class="disclaimer">This game is for entertainment and parody purposes only.</div>
-        </div>
-
-        <!-- Shop Screen -->
-        <div class="shop-screen" id="shopScreen">
-            <div class="swipe-hint"></div>
-            <div class="shop-content">
-                <div class="shop-header">
-                    <div class="shop-title">Character Shop</div>
-                    <div class="coin-display">
-                        <span>🪙</span>
-                        <span id="shopCoins">0</span>
-                    </div>
-                </div>
-                <div class="characters-grid" id="charactersGrid">
-                    <!-- Character cards will be generated here -->
-                </div>
-                <div class="shop-footer">
-                    <button class="btn btn-back" id="backBtn">Back to Menu</button>
-                </div>
-            </div>
-            <div class="disclaimer">This game is for entertainment and parody purposes only.</div>
-        </div>
-
-        <!-- Game UI -->
-        <div class="game-ui" id="gameUI" style="display: none;">
-            <div class="score-display" id="scoreDisplay">0</div>
-            <div class="coin-counter">
-                <span>🪙</span>
-                <span id="coinCounter">0</span>
-            </div>
-            <div class="power-indicator" id="powerIndicator" style="display: none;"></div>
-            <div class="voice-indicator" id="voiceIndicator">🎤 Voice Line!</div>
-            <div class="coin-indicator" id="coinIndicator">+1 🪙</div>
-            <div class="tap-to-begin" id="tapToBegin">Tap to Begin</div>
-        </div>
-
-        <!-- Game Over Screen -->
-        <div class="game-over-screen" id="gameOverScreen">
-            <div class="game-over-title" id="gameOverTitle">स्वाहा</div>
-            <div class="final-score">Score: <span id="finalScore">0</span></div>
-            <div class="coins-earned">Coins Earned: <span id="coinsEarned">0</span> 🪙</div>
-            <div class="game-over-buttons">
-                <button class="btn" id="restartBtn">Restart</button>
-                <button class="btn btn-shop" id="menuBtn">Main Menu</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Game Configuration
-        const GAME_CONFIG = {
-            CANVAS_WIDTH: 360,
-            CANVAS_HEIGHT: 640,
-            GRAVITY: 0.5,
-            JUMP_STRENGTH: -8,
-            PIPE_WIDTH: 60,
-            PIPE_GAP: 150,
-            PIPE_SPEED: 2,
-            PLAYER_SIZE: 40,
-            COINS_PER_PIPE: 1,
-            BONUS_COINS_INTERVAL: 10,
-            BONUS_COINS_AMOUNT: 5,
-            BUILDING_SPEED: 0.5,
-            CLOUD_SPEED: 0.3,
-            VOICE_LINE_INTERVAL: 5, // Play voice line every 5 pipes
-            COIN_MAGNET_RANGE: 100 // Range for coin magnet power
-        };
-
-        // Game State
-        const GameState = {
-            MENU: 'menu',
-            READY: 'ready',
-            PLAYING: 'playing',
-            GAME_OVER: 'game_over',
-            SHOP: 'shop',
-            SETTINGS: 'settings'
-        };
-
-        // Characters Data with special powers
-        const CHARACTERS = [
-            { 
-                id: 'kp_oli', 
-                name: 'KP Oli', 
-                price: 0, 
-                unlocked: true,
-                power: 'Double coins for first 5 pipes',
-                powerId: 'doubleCoins'
-            },
-            { 
-                id: 'balen', 
-                name: 'Balen', 
-                price: 0, 
-                unlocked: false,
-                power: 'One-time respawn ability',
-                powerId: 'respawn',
-                isLegend: true
-            },
-            { 
-                id: 'sher_bahadur', 
-                name: 'Sher Bahadur', 
-                price: 100, 
-                unlocked: false,
-                power: 'Coin magnet - attracts nearby coins',
-                powerId: 'coinMagnet'
-            },
-            { 
-                id: 'prachanda', 
-                name: 'Prachanda', 
-                price: 150, 
-                unlocked: false,
-                power: 'Shield - blocks one collision',
-                powerId: 'shield'
-            },
-            { 
-                id: 'mahesh_basnet', 
-                name: 'Mahesh Basnet', 
-                price: 200, 
-                unlocked: false,
-                power: '3 seconds invincibility at start',
-                powerId: 'invincibility'
-            },
-            { 
-                id: 'gagan_thapa', 
-                name: 'Gagan Thapa', 
-                price: 250, 
-                unlocked: false,
-                power: 'Extra points per pipe',
-                powerId: 'extraPoints'
-            }
-        ];
-
-        // Sound Manager
-        class SoundManager {
-            constructor() {
-                this.soundEnabled = true;
-                this.musicEnabled = true;
-                this.audioContext = null;
-                this.sounds = {};
-                this.voiceLines = {};
-                this.bgMusic = null;
-                this.gameOverSound = null;
-                this.initAudioContext();
-                this.loadSounds();
-                this.loadVoiceLines();
-                this.loadGameOverSound();
-            }
-
-            initAudioContext() {
-                try {
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.log('Web Audio API not supported');
-                }
-            }
-
-            loadSounds() {
-                // Create oscillator-based sound effects
-                this.sounds = {
-                    jump: this.createOscillator(400, 0.1),
-                    coin: this.createOscillator(800, 0.1),
-                    powerUp: this.createOscillator(600, 0.2),
-                    respawn: this.createOscillator(1000, 0.3),
-                    shield: this.createOscillator(300, 0.3)
-                };
-
-                // Load background music
-                this.loadBackgroundMusic();
-            }
-
-            loadVoiceLines() {
-                // Initialize voice line objects for each character
-                CHARACTERS.forEach(character => {
-                    this.voiceLines[character.id] = {
-                        audio: new Audio(),
-                        loaded: false,
-                        playing: false
-                    };
-                    
-                    // Set the source to the character's voice file
-                    this.voiceLines[character.id].audio.src = `assets/sounds/${character.id}.mp3`;
-                    
-                    // Set up event listeners
-                    this.voiceLines[character.id].audio.addEventListener('canplaythrough', () => {
-                        this.voiceLines[character.id].loaded = true;
-                    });
-                    
-                    this.voiceLines[character.id].audio.addEventListener('ended', () => {
-                        this.voiceLines[character.id].playing = false;
-                    });
-                    
-                    // Load the audio
-                    this.voiceLines[character.id].audio.load();
-                });
-            }
-
-            loadGameOverSound() {
-                // Load game over sound
-                this.gameOverSound = new Audio();
-                this.gameOverSound.src = 'assets/sounds/game_over.mp3';
-                
-                this.gameOverSound.addEventListener('canplaythrough', () => {
-                    console.log('Game over sound loaded');
-                });
-                
-                this.gameOverSound.addEventListener('error', (e) => {
-                    console.log('Error loading game over sound:', e);
-                    // Fallback to oscillator if MP3 fails to load
-                    this.sounds.gameOver = this.createOscillator(200, 0.5);
-                });
-                
-                this.gameOverSound.load();
-            }
-
-            createOscillator(frequency, duration) {
-                return () => {
-                    if (!this.soundEnabled || !this.audioContext) return;
-                    
-                    const oscillator = this.audioContext.createOscillator();
-                    const gainNode = this.audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(this.audioContext.destination);
-                    
-                    oscillator.frequency.value = frequency;
-                    oscillator.type = 'sine';
-                    
-                    gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
-                    
-                    oscillator.start(this.audioContext.currentTime);
-                    oscillator.stop(this.audioContext.currentTime + duration);
-                };
-            }
-
-            loadBackgroundMusic() {
-                // Create a simple background music loop
-                if (!this.audioContext) return;
-                
-                // For now, we'll use a simple tone as placeholder
-                // In production, you would load: assets/sounds/bg_music.mp3
-                this.bgMusic = {
-                    play: () => {
-                        if (!this.musicEnabled || !this.audioContext) return;
-                        // Placeholder for background music
-                        console.log('Background music playing (placeholder)');
-                    },
-                    pause: () => {
-                        console.log('Background music paused');
-                    },
-                    stop: () => {
-                        console.log('Background music stopped');
-                    }
-                };
-            }
-
-            play(soundName) {
-                if (soundName === 'gameOver') {
-                    // Play the actual game over MP3 if available
-                    if (this.gameOverSound && this.soundEnabled) {
-                        try {
-                            this.gameOverSound.currentTime = 0;
-                            this.gameOverSound.play().catch(e => {
-                                console.log('Error playing game over sound:', e);
-                                // Fallback to oscillator if MP3 fails to play
-                                if (this.sounds.gameOver) {
-                                    this.sounds.gameOver();
-                                }
-                            });
-                        } catch (e) {
-                            console.log('Error playing game over sound:', e);
-                            // Fallback to oscillator
-                            if (this.sounds.gameOver) {
-                                this.sounds.gameOver();
-                            }
-                        }
-                    }
-                } else if (this.sounds[soundName]) {
-                    this.sounds[soundName]();
-                }
-            }
-
-            playVoiceLine(characterId) {
-                if (!this.soundEnabled || !this.voiceLines[characterId] || this.voiceLines[characterId].playing) {
-                    return false;
-                }
-                
-                const voiceLine = this.voiceLines[characterId];
-                
-                if (voiceLine.loaded) {
-                    voiceLine.audio.currentTime = 0;
-                    voiceLine.audio.play();
-                    voiceLine.playing = true;
-                    return true;
-                } else {
-                    console.log(`Voice line for ${characterId} not loaded yet`);
-                    return false;
-                }
-            }
-
-            toggleSound() {
-                this.soundEnabled = !this.soundEnabled;
-                return this.soundEnabled;
-            }
-
-            toggleMusic() {
-                this.musicEnabled = !this.musicEnabled;
-                if (this.musicEnabled) {
-                    this.bgMusic.play();
-                } else {
-                    this.bgMusic.pause();
-                }
-                return this.musicEnabled;
-            }
-        }
-
-        // Game Class
-        class FlappyNeta {
-            constructor() {
-                this.canvas = document.getElementById('gameCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.state = GameState.MENU;
-                this.score = 0;
-                this.bestScore = 0;
-                this.totalCoins = 0;
-                this.selectedCharacter = 'kp_oli';
-                this.unlockedCharacters = ['kp_oli'];
-                this.sessionCoins = 0;
-                this.lastVoiceLineScore = 0;
-                
-                // Game objects
-                this.player = null;
-                this.pipes = [];
-                this.coins = [];
-                this.clouds = [];
-                this.buildings = [];
-                this.gameSpeed = GAME_CONFIG.PIPE_SPEED;
-                this.frameCount = 0;
-                
-                // Sound manager
-                this.soundManager = new SoundManager();
-                
-                // Initialize
-                this.init();
-            }
-
-            init() {
-                // Set canvas size
-                this.canvas.width = GAME_CONFIG.CANVAS_WIDTH;
-                this.canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
-                
-                // Load saved data
-                this.loadGameData();
-                
-                // Initialize player
-                this.player = new Player(
-                    GAME_CONFIG.CANVAS_WIDTH / 4,
-                    GAME_CONFIG.CANVAS_HEIGHT / 2,
-                    this.selectedCharacter
-                );
-                
-                // Initialize background elements
-                this.initBackground();
-                
-                // Setup event listeners
-                this.setupEventListeners();
-                
-                // Update UI
-                this.updateUI();
-                
-                // Start game loop
-                this.gameLoop();
-            }
-
-            initBackground() {
-                // Create clouds
-                for (let i = 0; i < 3; i++) {
-                    this.clouds.push({
-                        x: i * 200,
-                        y: 50 + Math.random() * 150,
-                        width: 80 + Math.random() * 40,
-                        height: 40 + Math.random() * 20,
-                        speed: GAME_CONFIG.CLOUD_SPEED * (0.8 + Math.random() * 0.4)
-                    });
-                }
-                
-                // Create buildings
-                let buildingX = 0;
-                while (buildingX < GAME_CONFIG.CANVAS_WIDTH * 2) {
-                    const width = 60 + Math.random() * 40;
-                    const height = 100 + Math.random() * 150;
-                    this.buildings.push({
-                        x: buildingX,
-                        y: GAME_CONFIG.CANVAS_HEIGHT - height,
-                        width: width,
-                        height: height,
-                        color: `hsl(${200 + Math.random() * 40}, 20%, ${30 + Math.random() * 20}%)`
-                    });
-                    buildingX += width + Math.random() * 20;
-                }
-            }
-
-            setupEventListeners() {
-                // Menu buttons
-                document.getElementById('playBtn').addEventListener('click', () => this.startGame());
-                document.getElementById('shopBtn').addEventListener('click', () => this.openShop());
-                document.getElementById('settingsBtn').addEventListener('click', () => this.openSettings());
-                document.getElementById('backBtn').addEventListener('click', () => this.closeShop());
-                document.getElementById('settingsBackBtn').addEventListener('click', () => this.closeSettings());
-                document.getElementById('restartBtn').addEventListener('click', () => this.restartGame());
-                document.getElementById('menuBtn').addEventListener('click', () => this.backToMenu());
-                
-                // Settings toggles
-                document.getElementById('musicToggle').addEventListener('click', () => {
-                    const toggle = document.getElementById('musicToggle');
-                    const enabled = this.soundManager.toggleMusic();
-                    toggle.classList.toggle('active', enabled);
-                });
-                
-                document.getElementById('soundToggle').addEventListener('click', () => {
-                    const toggle = document.getElementById('soundToggle');
-                    const enabled = this.soundManager.toggleSound();
-                    toggle.classList.toggle('active', enabled);
-                });
-                
-                // Game controls - prevent double events
-                this.setupGameControls();
-                
-                // Shop scroll handling
-                this.setupShopScrolling();
-            }
-
-            setupGameControls() {
-                // Flag to prevent double jump
-                let isJumping = false;
-                let jumpTimeout = null;
-                
-                const handleJump = (e) => {
-                    // Prevent default behavior and stop propagation
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // If already jumping, ignore this event
-                    if (isJumping) return;
-                    
-                    // Set jumping flag
-                    isJumping = true;
-                    
-                    // Clear any existing timeout
-                    if (jumpTimeout) {
-                        clearTimeout(jumpTimeout);
-                    }
-                    
-                    if (this.state === GameState.READY) {
-                        // Start the game
-                        this.state = GameState.PLAYING;
-                        document.getElementById('tapToBegin').style.display = 'none';
-                        this.player.jump();
-                        this.soundManager.play('jump');
-                        
-                        // Activate character special power
-                        this.activateCharacterPower();
-                    } else if (this.state === GameState.PLAYING) {
-                        this.player.jump();
-                        this.soundManager.play('jump');
-                    }
-                    
-                    // Reset jump flag after a longer delay to prevent double jumps
-                    jumpTimeout = setTimeout(() => {
-                        isJumping = false;
-                    }, 200);
-                };
-                
-                // Detect if the device supports touch
-                const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-                
-                if (isTouchDevice) {
-                    // For touch devices, only use touch events
-                    this.canvas.addEventListener('touchstart', handleJump, { passive: false });
-                } else {
-                    // For desktop, use click events
-                    this.canvas.addEventListener('click', handleJump);
-                }
-                
-                // Keyboard controls for all devices
-                document.addEventListener('keydown', (e) => {
-                    if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleJump(e);
-                    }
-                });
-            }
-
-            setupShopScrolling() {
-                const charactersGrid = document.getElementById('charactersGrid');
-                
-                // Remove custom touch handling and let browser handle scrolling naturally
-                // This will provide smooth scrolling on mobile devices
-                charactersGrid.style.overflowY = 'auto';
-                charactersGrid.style.overflowX = 'hidden';
-                charactersGrid.style.webkitOverflowScrolling = 'touch';
-            }
-
-            handleTap() {
-                // This method is no longer used, but kept for compatibility
-            }
-
-            activateCharacterPower() {
-                const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
-                if (!character) return;
-                
-                const powerIndicator = document.getElementById('powerIndicator');
-                
-                switch (character.powerId) {
-                    case 'doubleCoins':
-                        // KP Oli: Double coins for first 5 pipes
-                        this.player.doubleCoinsActive = true;
-                        this.player.doubleCoinsCount = 5;
-                        powerIndicator.textContent = 'Double Coins: 5';
-                        powerIndicator.style.display = 'flex';
-                        break;
-                        
-                    case 'coinMagnet':
-                        // Sher Bahadur: Coin magnet - attracts nearby coins
-                        this.player.coinMagnetActive = true;
-                        document.getElementById('coinMagnetEffect').style.display = 'block';
-                        powerIndicator.textContent = 'Coin Magnet Active';
-                        powerIndicator.style.display = 'flex';
-                        break;
-                        
-                    case 'shield':
-                        // Prachanda: Shield - blocks one collision
-                        this.player.shieldActive = true;
-                        document.getElementById('shieldEffect').style.display = 'block';
-                        powerIndicator.textContent = 'Shield Active';
-                        powerIndicator.style.display = 'flex';
-                        break;
-                        
-                    case 'invincibility':
-                        // Mahesh Basnet: 3 seconds invincibility at start
-                        this.player.invincible = true;
-                        document.getElementById('invincibilityEffect').style.display = 'block';
-                        powerIndicator.textContent = 'Invincibility: 3s';
-                        powerIndicator.style.display = 'flex';
-                        
-                        setTimeout(() => {
-                            this.player.invincible = false;
-                            document.getElementById('invincibilityEffect').style.display = 'none';
-                            powerIndicator.style.display = 'none';
-                        }, 3000);
-                        break;
-                        
-                    case 'extraPoints':
-                        // Gagan Thapa: Extra points per pipe
-                        this.player.extraPointsActive = true;
-                        powerIndicator.textContent = 'Double Points';
-                        powerIndicator.style.display = 'flex';
-                        break;
-                        
-                    case 'respawn':
-                        // Balen: One-time respawn ability
-                        this.player.respawnAvailable = true;
-                        powerIndicator.textContent = 'Respawn Available';
-                        powerIndicator.style.display = 'flex';
-                        break;
-                }
-                
-                this.soundManager.play('powerUp');
-            }
-
-            startGame() {
-                this.state = GameState.READY;
-                this.score = 0;
-                this.sessionCoins = 0;
-                this.lastVoiceLineScore = 0;
-                this.pipes = [];
-                this.coins = [];
-                this.gameSpeed = GAME_CONFIG.PIPE_SPEED;
-                this.frameCount = 0;
-                
-                // Reset player position and powers
-                this.player.reset(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
-                this.player.resetPowers();
-                
-                // Show game UI
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('shopScreen').style.display = 'none';
-                document.getElementById('settingsScreen').style.display = 'none';
-                document.getElementById('gameUI').style.display = 'block';
-                document.getElementById('gameOverScreen').style.display = 'none';
-                document.getElementById('tapToBegin').style.display = 'block';
-                document.getElementById('invincibilityEffect').style.display = 'none';
-                document.getElementById('coinMagnetEffect').style.display = 'none';
-                document.getElementById('shieldEffect').style.display = 'none';
-                
-                // Update displays
-                document.getElementById('scoreDisplay').textContent = '0';
-                document.getElementById('coinCounter').textContent = '0';
-                document.getElementById('powerIndicator').style.display = 'none';
-                
-                // Start background music
-                this.soundManager.bgMusic.play();
-            }
-
-            restartGame() {
-                this.startGame();
-            }
-
-            backToMenu() {
-                this.state = GameState.MENU;
-                document.getElementById('gameOverScreen').style.display = 'none';
-                document.getElementById('gameUI').style.display = 'none';
-                document.getElementById('invincibilityEffect').style.display = 'none';
-                document.getElementById('coinMagnetEffect').style.display = 'none';
-                document.getElementById('shieldEffect').style.display = 'none';
-                document.getElementById('menuScreen').style.display = 'flex';
-                
-                // Stop background music
-                this.soundManager.bgMusic.stop();
-                
-                this.updateUI();
-            }
-
-            openShop() {
-                this.state = GameState.SHOP;
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('shopScreen').style.display = 'block';
-                this.renderShop();
-            }
-
-            closeShop() {
-                this.state = GameState.MENU;
-                document.getElementById('shopScreen').style.display = 'none';
-                document.getElementById('menuScreen').style.display = 'flex';
-            }
-
-            openSettings() {
-                this.state = GameState.SETTINGS;
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('settingsScreen').style.display = 'flex';
-                
-                // Update toggle states
-                document.getElementById('musicToggle').classList.toggle('active', this.soundManager.musicEnabled);
-                document.getElementById('soundToggle').classList.toggle('active', this.soundManager.soundEnabled);
-            }
-
-            closeSettings() {
-                this.state = GameState.MENU;
-                document.getElementById('settingsScreen').style.display = 'none';
-                document.getElementById('menuScreen').style.display = 'flex';
-            }
-
-            renderShop() {
-                const grid = document.getElementById('charactersGrid');
-                grid.innerHTML = '';
-                
-                CHARACTERS.forEach(character => {
-                    const isUnlocked = this.unlockedCharacters.includes(character.id);
-                    const isSelected = this.selectedCharacter === character.id;
-                    
-                    const card = document.createElement('div');
-                    card.className = 'character-card';
-                    
-                    card.innerHTML = `
-                        <div class="character-image">
-                            <img src="assets/characters/${character.id}.png" alt="${character.name}">
-                        </div>
-                        <div class="character-name">${character.name}</div>
-                        <div class="character-power">${character.power}</div>
-                        <div class="character-price">
-                            ${!isUnlocked ? `<span>🪙 ${character.price}</span>` : '<span>✅ Unlocked</span>'}
-                        </div>
-                        <button class="btn-character ${!isUnlocked ? 'btn-buy' : isSelected ? 'btn-selected' : 'btn-select'}" 
-                                data-character="${character.id}">
-                            ${!isUnlocked ? 'Buy' : isSelected ? 'Selected' : 'Select'}
-                        </button>
-                    `;
-                    
-                    grid.appendChild(card);
-                });
-                
-                // Add event listeners to character buttons
-                document.querySelectorAll('.btn-character').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent event from bubbling up to the scroll container
-                        const characterId = e.target.dataset.character;
-                        const character = CHARACTERS.find(c => c.id === characterId);
-                        
-                        if (this.unlockedCharacters.includes(characterId)) {
-                            // Select character
-                            this.selectedCharacter = characterId;
-                            this.player.setCharacter(characterId);
-                            this.saveGameData();
-                            this.renderShop();
-                            this.updateMenuCharacterPreview();
-                        } else if (this.totalCoins >= character.price) {
-                            // Buy character
-                            this.totalCoins -= character.price;
-                            this.unlockedCharacters.push(characterId);
-                            this.saveGameData();
-                            this.renderShop();
-                            this.updateUI();
-                        }
-                    });
-                });
-                
-                // Update coin display
-                document.getElementById('shopCoins').textContent = this.totalCoins;
-            }
-
-            updateMenuCharacterPreview() {
-                const preview = document.getElementById('menuCharacterPreview');
-                preview.innerHTML = `<img src="assets/characters/${this.selectedCharacter}.png" alt="Character">`;
-            }
-
-            updateUI() {
-                document.getElementById('bestScore').textContent = this.bestScore;
-                document.getElementById('totalCoins').textContent = this.totalCoins;
-                this.updateMenuCharacterPreview();
-            }
-
-            gameLoop() {
-                this.update();
-                this.render();
-                requestAnimationFrame(() => this.gameLoop());
-            }
-
-            update() {
-                if (this.state !== GameState.PLAYING && this.state !== GameState.READY) return;
-                
-                this.frameCount++;
-                
-                // Update background
-                this.updateBackground();
-                
-                // Update player
-                this.player.update(this.state === GameState.PLAYING);
-                
-                // Generate pipes
-                if (this.state === GameState.PLAYING && this.frameCount % 90 === 0) {
-                    const gap = GAME_CONFIG.PIPE_GAP - Math.min(this.score * 0.5, 50);
-                    const pipeY = 100 + Math.random() * (GAME_CONFIG.CANVAS_HEIGHT - gap - 200);
-                    
-                    // Create top and bottom pipes
-                    this.pipes.push(new Pipe(GAME_CONFIG.CANVAS_WIDTH, 0, pipeY, true)); // Top pipe
-                    this.pipes.push(new Pipe(GAME_CONFIG.CANVAS_WIDTH, pipeY + gap, GAME_CONFIG.CANVAS_HEIGHT - pipeY - gap, false)); // Bottom pipe
-                    
-                    // Create coin in the middle of the gap
-                    this.coins.push(new Coin(GAME_CONFIG.CANVAS_WIDTH + GAME_CONFIG.PIPE_WIDTH / 2, pipeY + gap / 2));
-                }
-                
-                // Update pipes
-                this.pipes = this.pipes.filter(pipe => {
-                    pipe.update(this.gameSpeed);
-                    
-                    // Check if player passed the pipe (only check for top pipes)
-                    if (pipe.isTop && !pipe.passed && pipe.x + pipe.width < this.player.x) {
-                        pipe.passed = true;
-                        
-                        // Update score with character power
-                        const points = this.player.extraPointsActive ? 2 : 1;
-                        this.score += points;
-                        
-                        // Update score display
-                        document.getElementById('scoreDisplay').textContent = this.score;
-                        
-                        // Check if it's time to play a voice line (every 5 pipes)
-                        if (this.score - this.lastVoiceLineScore >= GAME_CONFIG.VOICE_LINE_INTERVAL) {
-                            this.playCharacterVoiceLine();
-                            this.lastVoiceLineScore = this.score;
-                        }
-                        
-                        // Increase difficulty
-                        if (this.score % 5 === 0) {
-                            this.gameSpeed += 0.2;
-                        }
-                        
-                        // Update character power counters
-                        if (this.player.doubleCoinsActive) {
-                            this.player.doubleCoinsCount--;
-                            const powerIndicator = document.getElementById('powerIndicator');
-                            powerIndicator.textContent = `Double Coins: ${this.player.doubleCoinsCount}`;
-                            
-                            if (this.player.doubleCoinsCount <= 0) {
-                                this.player.doubleCoinsActive = false;
-                                powerIndicator.style.display = 'none';
-                            }
-                        }
-                    }
-                    
-                    // Check collision
-                    if (!this.player.invincible && this.checkPipeCollision(this.player, pipe)) {
-                        this.handleCollision();
-                    }
-                    
-                    return pipe.x + pipe.width > 0;
-                });
-                
-                // Update coins with coin magnet effect
-                this.coins = this.coins.filter(coin => {
-                    coin.update(this.gameSpeed);
-                    
-                    // Apply coin magnet effect if active
-                    if (this.player.coinMagnetActive) {
-                        const playerCenterX = this.player.x + this.player.size / 2;
-                        const playerCenterY = this.player.y + this.player.size / 2;
-                        const distance = Math.sqrt(
-                            Math.pow(playerCenterX - coin.x, 2) + 
-                            Math.pow(playerCenterY - coin.y, 2)
-                        );
-                        
-                        // If coin is within magnet range, attract it to player
-                        if (distance < GAME_CONFIG.COIN_MAGNET_RANGE) {
-                            const angle = Math.atan2(playerCenterY - coin.y, playerCenterX - coin.x);
-                            coin.x += Math.cos(angle) * 5;
-                            coin.y += Math.sin(angle) * 5;
-                        }
-                    }
-                    
-                    // Check if player collected the coin
-                    if (!coin.collected && this.checkCoinCollision(this.player, coin)) {
-                        coin.collect();
-                        
-                        // Apply character power
-                        const coinsEarned = this.player.doubleCoinsActive ? 2 : 1;
-                        this.sessionCoins += coinsEarned;
-                        this.totalCoins += coinsEarned;
-                        this.showCoinIndicator(coinsEarned);
-                        document.getElementById('coinCounter').textContent = this.sessionCoins;
-                        this.saveGameData();
-                        this.soundManager.play('coin');
-                    }
-                    
-                    return coin.x + coin.radius > 0 && !coin.collected;
-                });
-                
-                // Check boundaries
-                if (!this.player.invincible && (this.player.y < 0 || this.player.y + this.player.size > GAME_CONFIG.CANVAS_HEIGHT)) {
-                    this.handleCollision();
-                }
-            }
-
-            playCharacterVoiceLine() {
-                const voicePlayed = this.soundManager.playVoiceLine(this.selectedCharacter);
-                
-                if (voicePlayed) {
-                    // Show voice indicator
-                    const voiceIndicator = document.getElementById('voiceIndicator');
-                    voiceIndicator.classList.add('show');
-                    
-                    // Hide after 2 seconds
-                    setTimeout(() => {
-                        voiceIndicator.classList.remove('show');
-                    }, 2000);
-                }
-            }
-
-            handleCollision() {
-                const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
-                
-                // Check if Prachanda has shield ability
-                if (character && character.powerId === 'shield' && this.player.shieldActive) {
-                    // Use shield ability
-                    this.player.shieldActive = false;
-                    document.getElementById('shieldEffect').style.display = 'none';
-                    
-                    // Update power indicator
-                    const powerIndicator = document.getElementById('powerIndicator');
-                    powerIndicator.textContent = 'Shield Used';
-                    
-                    // Play shield sound
-                    this.soundManager.play('shield');
-                    
-                    // Make player briefly invincible
-                    this.player.invincible = true;
-                    document.getElementById('invincibilityEffect').style.display = 'block';
-                    
-                    setTimeout(() => {
-                        this.player.invincible = false;
-                        document.getElementById('invincibilityEffect').style.display = 'none';
-                    }, 1000);
-                } 
-                // Check if Balen has respawn ability
-                else if (character && character.powerId === 'respawn' && this.player.respawnAvailable) {
-                    // Use respawn ability
-                    this.player.respawnAvailable = false;
-                    this.player.respawn(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
-                    
-                    // Update power indicator
-                    const powerIndicator = document.getElementById('powerIndicator');
-                    powerIndicator.textContent = 'Respawn Used';
-                    
-                    // Play respawn sound
-                    this.soundManager.play('respawn');
-                    
-                    // Make player briefly invincible
-                    this.player.invincible = true;
-                    document.getElementById('invincibilityEffect').style.display = 'block';
-                    
-                    setTimeout(() => {
-                        this.player.invincible = false;
-                        document.getElementById('invincibilityEffect').style.display = 'none';
-                    }, 1000);
-                } else {
-                    // Regular game over
-                    this.gameOver();
-                }
-            }
-
-            updateBackground() {
-                // Update clouds
-                this.clouds.forEach(cloud => {
-                    cloud.x -= cloud.speed;
-                    if (cloud.x + cloud.width < 0) {
-                        cloud.x = GAME_CONFIG.CANVAS_WIDTH;
-                    }
-                });
-                
-                // Update buildings
-                this.buildings.forEach(building => {
-                    building.x -= GAME_CONFIG.BUILDING_SPEED;
-                    if (building.x + building.width < 0) {
-                        building.x = GAME_CONFIG.CANVAS_WIDTH + Math.random() * 100;
-                        building.width = 60 + Math.random() * 40;
-                        building.height = 100 + Math.random() * 150;
-                        building.y = GAME_CONFIG.CANVAS_HEIGHT - building.height;
-                        building.color = `hsl(${200 + Math.random() * 40}, 20%, ${30 + Math.random() * 20}%)`;
-                    }
-                });
-            }
-
-            render() {
-                // Clear canvas
-                this.ctx.clearRect(0, 0, GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.CANVAS_HEIGHT);
-                
-                if (this.state === GameState.PLAYING || this.state === GameState.READY) {
-                    // Draw background
-                    this.drawBackground();
-                    
-                    // Draw pipes
-                    this.pipes.forEach(pipe => pipe.draw(this.ctx));
-                    
-                    // Draw coins
-                    this.coins.forEach(coin => coin.draw(this.ctx));
-                    
-                    // Draw player
-                    this.player.draw(this.ctx);
-                }
-            }
-
-            drawBackground() {
-                // Draw sky gradient
-                const gradient = this.ctx.createLinearGradient(0, 0, 0, GAME_CONFIG.CANVAS_HEIGHT);
-                gradient.addColorStop(0, '#87CEEB');
-                gradient.addColorStop(1, '#98D8E8');
-                this.ctx.fillStyle = gradient;
-                this.ctx.fillRect(0, 0, GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.CANVAS_HEIGHT);
-                
-                // Draw clouds
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                this.clouds.forEach(cloud => {
-                    this.drawCloud(cloud.x, cloud.y, cloud.width, cloud.height);
-                });
-                
-                // Draw buildings
-                this.buildings.forEach(building => {
-                    this.drawBuilding(building.x, building.y, building.width, building.height, building.color);
-                });
-            }
-
-            drawCloud(x, y, width, height) {
-                this.ctx.beginPath();
-                this.ctx.arc(x + width * 0.25, y + height * 0.5, height * 0.5, 0, Math.PI * 2);
-                this.ctx.arc(x + width * 0.5, y + height * 0.5, height * 0.6, 0, Math.PI * 2);
-                this.ctx.arc(x + width * 0.75, y + height * 0.5, height * 0.5, 0, Math.PI * 2);
-                this.ctx.fill();
-            }
-
-            drawBuilding(x, y, width, height, color) {
-                // Building body
-                this.ctx.fillStyle = color;
-                this.ctx.fillRect(x, y, width, height);
-                
-                // Windows
-                this.ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
-                const windowWidth = width * 0.15;
-                const windowHeight = height * 0.1;
-                const windowSpacingX = width * 0.25;
-                const windowSpacingY = height * 0.2;
-                
-                for (let row = 0; row < Math.floor(height / (windowHeight + windowSpacingY)); row++) {
-                    for (let col = 0; col < Math.floor(width / (windowWidth + windowSpacingX)); col++) {
-                        const windowX = x + col * (windowWidth + windowSpacingX) + windowSpacingX / 2;
-                        const windowY = y + row * (windowHeight + windowSpacingY) + windowSpacingY / 2;
-                        this.ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
-                    }
-                }
-            }
-
-            checkPipeCollision(player, pipe) {
-                const playerLeft = player.x;
-                const playerRight = player.x + player.size;
-                const playerTop = player.y;
-                const playerBottom = player.y + player.size;
-                
-                const pipeLeft = pipe.x;
-                const pipeRight = pipe.x + pipe.width;
-                const pipeTop = pipe.y;
-                const pipeBottom = pipe.y + pipe.height;
-                
-                // Check if player is within pipe x range
-                if (playerRight > pipeLeft && playerLeft < pipeRight) {
-                    // Check if player hits the pipe
-                    if (playerTop < pipeBottom && playerBottom > pipeTop) {
-                        return true;
-                    }
-                }
-                
-                return false;
-            }
-
-            checkCoinCollision(player, coin) {
-                const playerCenterX = player.x + player.size / 2;
-                const playerCenterY = player.y + player.size / 2;
-                
-                const distance = Math.sqrt(
-                    Math.pow(playerCenterX - coin.x, 2) + 
-                    Math.pow(playerCenterY - coin.y, 2)
-                );
-                
-                return distance < player.size / 2 + coin.radius;
-            }
-
-            showCoinIndicator(amount) {
-                const indicator = document.getElementById('coinIndicator');
-                indicator.textContent = `+${amount} 🪙`;
-                indicator.classList.add('show');
-                setTimeout(() => {
-                    indicator.classList.remove('show');
-                }, 1000);
-            }
-
-            gameOver() {
-                this.state = GameState.GAME_OVER;
-                
-                // Stop background music
-                this.soundManager.bgMusic.stop();
-                
-                // Update best score
-                if (this.score > this.bestScore) {
-                    this.bestScore = this.score;
-                }
-                
-                // Calculate bonus coins
-                const bonusCoins = Math.floor(this.score / GAME_CONFIG.BONUS_COINS_INTERVAL) * GAME_CONFIG.BONUS_COINS_AMOUNT;
-                const totalCoinsEarned = this.sessionCoins + bonusCoins;
-                this.totalCoins += bonusCoins;
-                
-                // Save data
-                this.saveGameData();
-                
-                // Check if character is Balen
-                const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
-                const gameOverTitle = document.getElementById('gameOverTitle');
-                
-                if (character && character.isLegend) {
-                    // Show "Legend Never Dies" for Balen
-                    gameOverTitle.textContent = "Legend Never Dies";
-                } else {
-                    // Show "स्वाहा" for other characters
-                    gameOverTitle.textContent = "स्वाहा";
-                }
-                
-                // Play game over sound
-                this.soundManager.play('gameOver');
-                
-                // Show game over screen
-                document.getElementById('finalScore').textContent = this.score;
-                document.getElementById('coinsEarned').textContent = totalCoinsEarned;
-                document.getElementById('gameOverScreen').style.display = 'flex';
-            }
-
-            saveGameData() {
-                const gameData = {
-                    bestScore: this.bestScore,
-                    totalCoins: this.totalCoins,
-                    selectedCharacter: this.selectedCharacter,
-                    unlockedCharacters: this.unlockedCharacters
-                };
-                localStorage.setItem('flappyNetaData', JSON.stringify(gameData));
-            }
-
-            loadGameData() {
-                const savedData = localStorage.getItem('flappyNetaData');
-                if (savedData) {
-                    const gameData = JSON.parse(savedData);
-                    this.bestScore = gameData.bestScore || 0;
-                    this.totalCoins = gameData.totalCoins || 0;
-                    this.selectedCharacter = gameData.selectedCharacter || 'kp_oli';
-                    this.unlockedCharacters = gameData.unlockedCharacters || ['kp_oli'];
-                }
-            }
-        }
-
-        // Player Class
-        class Player {
-            constructor(x, y, characterId) {
-                this.x = x;
-                this.y = y;
-                this.size = GAME_CONFIG.PLAYER_SIZE;
-                this.velocity = 0;
-                this.characterId = characterId;
-                this.rotation = 0;
-                this.idleOffset = 0;
-                this.image = new Image();
-                this.image.src = `assets/characters/${characterId}.png`;
-                
-                // Character powers
-                this.doubleCoinsActive = false;
-                this.doubleCoinsCount = 0;
-                this.coinMagnetActive = false;
-                this.shieldActive = false;
-                this.gravityMultiplier = 1;
-                this.invincible = false;
-                this.extraPointsActive = false;
-                this.respawnAvailable = false;
-                this.respawnX = x; // Store respawn position
-                this.respawnY = y;
-            }
-
-            update(isPlaying) {
-                if (isPlaying) {
-                    // Apply gravity with character modifier
-                    this.velocity += GAME_CONFIG.GRAVITY * this.gravityMultiplier;
-                    this.y += this.velocity;
-                    
-                    // Limit fall speed
-                    if (this.velocity > 10) {
-                        this.velocity = 10;
-                    }
-                    
-                    // Update rotation based on velocity
-                    this.rotation = Math.min(Math.max(this.velocity * 3, -30), 90);
-                } else {
-                    // Idle animation - floating up and down
-                    this.idleOffset += 0.05;
-                    this.y = GAME_CONFIG.CANVAS_HEIGHT / 2 + Math.sin(this.idleOffset) * 10;
-                    this.rotation = 0;
-                }
-            }
-
-            jump() {
-                this.velocity = GAME_CONFIG.JUMP_STRENGTH;
-            }
-
-            reset(x, y) {
-                this.x = x;
-                this.y = y;
-                this.velocity = 0;
-                this.rotation = 0;
-                this.idleOffset = 0;
-            }
-
-            resetPowers() {
-                this.doubleCoinsActive = false;
-                this.doubleCoinsCount = 0;
-                this.coinMagnetActive = false;
-                this.shieldActive = false;
-                this.gravityMultiplier = 1;
-                this.invincible = false;
-                this.extraPointsActive = false;
-                this.respawnAvailable = false;
-            }
-
-            respawn(x, y) {
-                this.x = x;
-                this.y = y;
-                this.velocity = 0;
-                this.rotation = 0;
-                this.idleOffset = 0;
-                // Store the respawn position for next time
-                this.respawnX = x;
-                this.respawnY = y;
-            }
-
-            setCharacter(characterId) {
-                this.characterId = characterId;
-                this.image.src = `assets/characters/${characterId}.png`;
-            }
-
-            draw(ctx) {
-                ctx.save();
-                ctx.translate(this.x + this.size / 2, this.y + this.size / 2);
-                ctx.rotate(this.rotation * Math.PI / 180);
-                
-                // Draw character image
-                ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
-                
-                // Draw shield if active
-                if (this.shieldActive) {
-                    ctx.strokeStyle = 'rgba(76, 175, 80, 0.7)';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, this.size / 2 + 5, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                
-                // Draw invincibility effect
-                if (this.invincible) {
-                    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-                    ctx.beginPath();
-                    ctx.arc(0, 0, this.size / 2 + 10, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                ctx.restore();
-            }
-        }
-
-        // Pipe Class
-        class Pipe {
-            constructor(x, y, height, isTop) {
-                this.x = x;
-                this.y = y;
-                this.width = GAME_CONFIG.PIPE_WIDTH;
-                this.height = height;
-                this.isTop = isTop;
-                this.passed = false;
-                this.color = '#73BF2E'; // Classic Flappy Bird green
-            }
-
-            update(speed) {
-                this.x -= speed;
-            }
-
-            draw(ctx) {
-                const capHeight = 30;
-                const capWidth = this.width + 10;
-                const capX = this.x - 5;
-                
-                // Pipe body
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-                
-                // Pipe cap
-                if (this.isTop) {
-                    // Top pipe cap at the bottom of the pipe
-                    ctx.fillRect(capX, this.y + this.height - capHeight, capWidth, capHeight);
-                } else {
-                    // Bottom pipe cap at the top of the pipe
-                    ctx.fillRect(capX, this.y, capWidth, capHeight);
-                }
-                
-                // Pipe highlight
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.fillRect(this.x + 5, this.y, 10, this.height);
-                
-                // Pipe border
-                ctx.strokeStyle = '#5A8E1F';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(this.x, this.y, this.width, this.height);
-                
-                if (this.isTop) {
-                    ctx.strokeRect(capX, this.y + this.height - capHeight, capWidth, capHeight);
-                } else {
-                    ctx.strokeRect(capX, this.y, capWidth, capHeight);
-                }
-            }
-        }
-
-        // Coin Class
-        class Coin {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.radius = 15;
-                this.collected = false;
-                this.rotation = 0;
-                this.floatOffset = 0;
-                this.scale = 1;
-                this.collectAnimation = 0;
-            }
-
-            update(speed) {
-                if (!this.collected) {
-                    this.x -= speed;
-                    this.rotation += 0.05;
-                    this.floatOffset += 0.05;
-                    this.scale = 1 + Math.sin(this.floatOffset) * 0.1;
-                } else {
-                    // Collection animation
-                    this.collectAnimation += 0.1;
-                    this.scale += 0.2;
-                    this.radius += 1;
-                    if (this.collectAnimation > 1) {
-                        this.collected = true; // Will be filtered out
-                    }
-                }
-            }
-
-            collect() {
-                this.collected = true;
-            }
-
-            draw(ctx) {
-                if (this.collectAnimation > 0) {
-                    ctx.globalAlpha = 1 - this.collectAnimation;
-                }
-                
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.scale(this.scale, this.scale);
-                
-                // Coin glow
-                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
-                gradient.addColorStop(0, '#FFD700');
-                gradient.addColorStop(0.7, '#FFC107');
-                gradient.addColorStop(1, 'rgba(255, 193, 7, 0.3)');
-                
-                // Draw coin
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Coin border
-                ctx.strokeStyle = '#FF8F00';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // Coin symbol
-                ctx.fillStyle = '#FF8F00';
-                ctx.font = 'bold 12px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('🪙', 0, 0);
-                
-                ctx.restore();
-                
-                if (this.collectAnimation > 0) {
-                    ctx.globalAlpha = 1;
-                }
-            }
-        }
-
-        // Initialize game when page loads
-        window.addEventListener('load', () => {
-            const game = new FlappyNeta();
-        });
-    </script>
-</body>
+<div class="game-container">
+<canvas id="gameCanvas"></canvas>
+<div class="invincibility-effect" id="invincibilityEffect"></div>
+<div class="coin-magnet-effect" id="coinMagnetEffect"></div>
+<div class="shield-effect" id="shieldEffect"></div>
+
+<!-- Main Menu -->
+<div class="menu-screen" id="menuScreen">
+<div class="game-title">Flappy Netā</div>
+<div class="character-preview" id="menuCharacterPreview">
+<img src="assets/characters/kp_oli.png" alt="Character">
+</div>
+<div class="menu-buttons">
+<button class="btn" id="playBtn">Play</button>
+<button class="btn btn-shop" id="shopBtn">Shop</button>
+<button class="btn btn-settings" id="settingsBtn">Settings</button>
+</div>
+<div class="stats-container">
+<div class="stat-item">
+<span>🏆 Best Score:</span>
+<span id="bestScore">0</span>
+</div>
+<div class="stat-item">
+<span>🪙 Total Coins:</span>
+<span id="totalCoins">0</span>
+</div>
+</div>
+<div class="disclaimer">This game is for entertainment and parody purposes only.</div>
+</div>
+
+<!-- Settings Screen -->
+<div class="settings-screen" id="settingsScreen">
+<div class="settings-title">Settings</div>
+<div class="settings-options">
+<div class="setting-item">
+<div class="setting-label">Music</div>
+<div class="setting-toggle" id="musicToggle">
+<div class="setting-toggle-slider"></div>
+</div>
+</div>
+<div class="setting-item">
+<div class="setting-label">Sound Effects</div>
+<div class="setting-toggle" id="soundToggle">
+<div class="setting-toggle-slider"></div>
+</div>
+</div>
+</div>
+<button class="btn btn-back" id="settingsBackBtn" style="margin-top: 30px;">Back</button>
+<div class="disclaimer">This game is for entertainment and parody purposes only.</div>
+</div>
+
+<!-- Shop Screen -->
+<div class="shop-screen" id="shopScreen">
+<div class="swipe-hint"></div>
+<div class="shop-content">
+<div class="shop-header">
+<div class="shop-title">Character Shop</div>
+<div class="coin-display">
+<span>🪙</span>
+<span id="shopCoins">0</span>
+</div>
+</div>
+<div class="characters-grid" id="charactersGrid">
+<!-- Character cards will be generated here -->
+</div>
+<div class="shop-footer">
+<button class="btn btn-back" id="backBtn">Back to Menu</button>
+</div>
+</div>
+<div class="disclaimer">This game is for entertainment and parody purposes only.</div>
+</div>
+
+<!-- Game UI -->
+<div class="game-ui" id="gameUI" style="display: none;">
+<div class="score-display" id="scoreDisplay">0</div>
+<div class="coin-counter">
+<span>🪙</span>
+<span id="coinCounter">0</span>
+</div>
+<div class="power-indicator" id="powerIndicator" style="display: none;"></div>
+<div class="voice-indicator" id="voiceIndicator">🎤 Voice Line!</div>
+<div class="coin-indicator" id="coinIndicator">+1 🪙</div>
+<div class="tap-to-begin" id="tapToBegin">Tap to Begin</div>
+</div>
+
+<!-- Game Over Screen -->
+<div class="game-over-screen" id="gameOverScreen">
+<div class="game-over-title" id="gameOverTitle">स्वाहा</div>
+<div class="final-score">Score: <span id="finalScore">0</span></div>
+<div class="coins-earned">Coins Earned: <span id="coinsEarned">0</span> 🪙</div>
+<div class="game-over-buttons">
+<button class="btn" id="restartBtn">Restart</button>
+<button class="btn btn-shop" id="menuBtn">Main Menu</button>
+</div>
+</div>
+</div>
+
+<script>
+// Game Configuration
+const GAME_CONFIG = {
+CANVAS_WIDTH: 360,
+CANVAS_HEIGHT: 640,
+GRAVITY: 0.5,
+JUMP_STRENGTH: -8,
+PIPE_WIDTH: 60,
+PIPE_GAP: 150,
+PIPE_SPEED: 2,
+PLAYER_SIZE: 40,
+COINS_PER_PIPE: 1,
+BONUS_COINS_INTERVAL: 10,
+BONUS_COINS_AMOUNT: 5,
+BUILDING_SPEED: 0.5,
+CLOUD_SPEED: 0.3,
+VOICE_LINE_INTERVAL: 5, // Play voice line every 5 pipes
+COIN_MAGNET_RANGE: 100 // Range for coin magnet power
+};
+
+// Game State
+const GameState = {
+MENU: 'menu',
+READY: 'ready',
+PLAYING: 'playing',
+GAME_OVER: 'game_over',
+SHOP: 'shop',
+SETTINGS: 'settings'
+};
+
+// Characters Data with special powers
+const CHARACTERS = [
+{
+id: 'kp_oli',
+name: 'KP Oli',
+price: 0,
+unlocked: true,
+power: 'Double coins for first 5 pipes',
+powerId: 'doubleCoins'
+},
+{
+id: 'balen',
+name: 'Balen',
+price: 0,
+unlocked: false,
+power: 'One-time respawn ability',
+powerId: 'respawn',
+isLegend: true
+},
+{
+id: 'sher_bahadur',
+name: 'Sher Bahadur',
+price: 100,
+unlocked: false,
+power: 'Coin magnet - attracts nearby coins',
+powerId: 'coinMagnet'
+},
+{
+id: 'prachanda',
+name: 'Prachanda',
+price: 150,
+unlocked: false,
+power: 'Shield - blocks one collision',
+powerId: 'shield'
+},
+{
+id: 'mahesh_basnet',
+name: 'Mahesh Basnet',
+price: 200,
+unlocked: false,
+power: '3 seconds invincibility at start',
+powerId: 'invincibility'
+},
+{
+id: 'gagan_thapa',
+name: 'Gagan Thapa',
+price: 250,
+unlocked: false,
+power: 'Extra points per pipe',
+powerId: 'extraPoints'
+}
+];
+
+// Sound Manager
+class SoundManager {
+constructor() {
+this.soundEnabled = true;
+this.musicEnabled = true;
+this.audioContext = null;
+this.sounds = {};
+this.voiceLines = {};
+this.bgMusic = null;
+this.gameOverSound = null;
+this.initAudioContext();
+this.loadSounds();
+this.loadVoiceLines();
+this.loadGameOverSound();
+}
+
+initAudioContext() {
+try {
+this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch (e) {
+console.log('Web Audio API not supported');
+}
+}
+
+loadSounds() {
+// Create oscillator-based sound effects
+this.sounds = {
+jump: this.createOscillator(400, 0.1),
+coin: this.createOscillator(800, 0.1),
+powerUp: this.createOscillator(600, 0.2),
+respawn: this.createOscillator(1000, 0.3),
+shield: this.createOscillator(300, 0.3)
+};
+
+// Load background music
+this.loadBackgroundMusic();
+}
+
+loadVoiceLines() {
+// Initialize voice line objects for each character
+CHARACTERS.forEach(character => {
+this.voiceLines[character.id] = {
+audio: new Audio(),
+loaded: false,
+playing: false
+};
+
+// Set the source to the character's voice file
+this.voiceLines[character.id].audio.src = `assets/sounds/${character.id}.mp3`;
+
+// Set up event listeners
+this.voiceLines[character.id].audio.addEventListener('canplaythrough', () => {
+this.voiceLines[character.id].loaded = true;
+});
+
+this.voiceLines[character.id].audio.addEventListener('ended', () => {
+this.voiceLines[character.id].playing = false;
+});
+
+// Load the audio
+this.voiceLines[character.id].audio.load();
+});
+}
+
+loadGameOverSound() {
+// Load game over sound
+this.gameOverSound = new Audio();
+this.gameOverSound.src = 'assets/sounds/game_over.mp3';
+
+this.gameOverSound.addEventListener('canplaythrough', () => {
+console.log('Game over sound loaded');
+});
+
+this.gameOverSound.addEventListener('error', (e) => {
+console.log('Error loading game over sound:', e);
+// Fallback to oscillator if MP3 fails to load
+this.sounds.gameOver = this.createOscillator(200, 0.5);
+});
+
+this.gameOverSound.load();
+}
+
+createOscillator(frequency, duration) {
+return () => {
+if (!this.soundEnabled || !this.audioContext) return;
+
+const oscillator = this.audioContext.createOscillator();
+const gainNode = this.audioContext.createGain();
+
+oscillator.connect(gainNode);
+gainNode.connect(this.audioContext.destination);
+
+oscillator.frequency.value = frequency;
+oscillator.type = 'sine';
+
+gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+
+oscillator.start(this.audioContext.currentTime);
+oscillator.stop(this.audioContext.currentTime + duration);
+};
+}
+
+loadBackgroundMusic() {
+// Create a simple background music loop
+if (!this.audioContext) return;
+
+// For now, we'll use a simple tone as placeholder
+// In production, you would load: assets/sounds/bg_music.mp3
+this.bgMusic = {
+play: () => {
+if (!this.musicEnabled || !this.audioContext) return;
+// Placeholder for background music
+console.log('Background music playing (placeholder)');
+},
+pause: () => {
+console.log('Background music paused');
+},
+stop: () => {
+console.log('Background music stopped');
+}
+};
+}
+
+play(soundName) {
+if (soundName === 'gameOver') {
+// Play the actual game over MP3 if available
+if (this.gameOverSound && this.soundEnabled) {
+try {
+this.gameOverSound.currentTime = 0;
+this.gameOverSound.play().catch(e => {
+console.log('Error playing game over sound:', e);
+// Fallback to oscillator if MP3 fails to play
+if (this.sounds.gameOver) {
+this.sounds.gameOver();
+}
+});
+} catch (e) {
+console.log('Error playing game over sound:', e);
+// Fallback to oscillator
+if (this.sounds.gameOver) {
+this.sounds.gameOver();
+}
+}
+}
+} else if (this.sounds[soundName]) {
+this.sounds[soundName]();
+}
+}
+
+playVoiceLine(characterId) {
+if (!this.soundEnabled || !this.voiceLines[characterId] || this.voiceLines[characterId].playing) {
+return false;
+}
+
+const voiceLine = this.voiceLines[characterId];
+
+if (voiceLine.loaded) {
+voiceLine.audio.currentTime = 0;
+voiceLine.audio.play();
+voiceLine.playing = true;
+return true;
+} else {
+console.log(`Voice line for ${characterId} not loaded yet`);
+return false;
+}
+}
+
+toggleSound() {
+this.soundEnabled = !this.soundEnabled;
+return this.soundEnabled;
+}
+
+toggleMusic() {
+this.musicEnabled = !this.musicEnabled;
+if (this.musicEnabled) {
+this.bgMusic.play();
+} else {
+this.bgMusic.pause();
+}
+return this.musicEnabled;
+}
+}
+
+// Game Class
+class FlappyNeta {
+constructor() {
+this.canvas = document.getElementById('gameCanvas');
+this.ctx = this.canvas.getContext('2d');
+this.state = GameState.MENU;
+this.score = 0;
+this.bestScore = 0;
+this.totalCoins = 0;
+this.selectedCharacter = 'kp_oli';
+this.unlockedCharacters = ['kp_oli'];
+this.sessionCoins = 0;
+this.lastVoiceLineScore = 0;
+
+// Game objects
+this.player = null;
+this.pipes = [];
+this.coins = [];
+this.clouds = [];
+this.buildings = [];
+this.gameSpeed = GAME_CONFIG.PIPE_SPEED;
+this.frameCount = 0;
+
+// Sound manager
+this.soundManager = new SoundManager();
+
+// Initialize
+this.init();
+}
+
+init() {
+// Set canvas size
+this.canvas.width = GAME_CONFIG.CANVAS_WIDTH;
+this.canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
+
+// Load saved data
+this.loadGameData();
+
+// Initialize player
+this.player = new Player(
+GAME_CONFIG.CANVAS_WIDTH / 4,
+GAME_CONFIG.CANVAS_HEIGHT / 2,
+this.selectedCharacter
+);
+
+// Initialize background elements
+this.initBackground();
+
+// Setup event listeners
+this.setupEventListeners();
+
+// Update UI
+this.updateUI();
+
+// Start game loop
+this.gameLoop();
+}
+
+initBackground() {
+// Create clouds
+for (let i = 0; i < 3; i++) {
+this.clouds.push({
+x: i * 200,
+y: 50 + Math.random() * 150,
+width: 80 + Math.random() * 40,
+height: 40 + Math.random() * 20,
+speed: GAME_CONFIG.CLOUD_SPEED * (0.8 + Math.random() * 0.4)
+});
+}
+
+// Create buildings
+let buildingX = 0;
+while (buildingX < GAME_CONFIG.CANVAS_WIDTH * 2) {
+const width = 60 + Math.random() * 40;
+const height = 100 + Math.random() * 150;
+this.buildings.push({
+x: buildingX,
+y: GAME_CONFIG.CANVAS_HEIGHT - height,
+width: width,
+height: height,
+color: `hsl(${200 + Math.random() * 40}, 20%, ${30 + Math.random() * 20}%)`
+});
+buildingX += width + Math.random() * 20;
+}
+}
+
+setupEventListeners() {
+// Menu buttons
+document.getElementById('playBtn').addEventListener('click', () => this.startGame());
+document.getElementById('shopBtn').addEventListener('click', () => this.openShop());
+document.getElementById('settingsBtn').addEventListener('click', () => this.openSettings());
+document.getElementById('backBtn').addEventListener('click', () => this.closeShop());
+document.getElementById('settingsBackBtn').addEventListener('click', () => this.closeSettings());
+document.getElementById('restartBtn').addEventListener('click', () => this.restartGame());
+document.getElementById('menuBtn').addEventListener('click', () => this.backToMenu());
+
+// Settings toggles
+document.getElementById('musicToggle').addEventListener('click', () => {
+const toggle = document.getElementById('musicToggle');
+const enabled = this.soundManager.toggleMusic();
+toggle.classList.toggle('active', enabled);
+});
+
+document.getElementById('soundToggle').addEventListener('click', () => {
+const toggle = document.getElementById('soundToggle');
+const enabled = this.soundManager.toggleSound();
+toggle.classList.toggle('active', enabled);
+});
+
+// Game controls
+this.setupGameControls();
+
+// Shop scroll handling
+this.setupShopScrolling();
+}
+
+setupGameControls() {
+// Track the last jump time to prevent double-taps from a single touch
+let lastJumpTime = 0;
+const MIN_JUMP_INTERVAL = 50; // Reduced from 200ms to allow faster tapping
+
+const handleJump = (e) => {
+// Prevent default behavior and stop propagation
+e.preventDefault();
+e.stopPropagation();
+
+// Get current time
+const now = Date.now();
+
+// Check if enough time has passed since last jump
+if (now - lastJumpTime < MIN_JUMP_INTERVAL) {
+return; // Ignore if tapped too quickly
+}
+
+// Update last jump time
+lastJumpTime = now;
+
+if (this.state === GameState.READY) {
+// Start the game
+this.state = GameState.PLAYING;
+document.getElementById('tapToBegin').style.display = 'none';
+this.player.jump();
+this.soundManager.play('jump');
+
+// Activate character special power
+this.activateCharacterPower();
+} else if (this.state === GameState.PLAYING) {
+this.player.jump();
+this.soundManager.play('jump');
+}
+};
+
+// Detect if the device supports touch
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+if (isTouchDevice) {
+// For touch devices, only use touch events
+this.canvas.addEventListener('touchstart', handleJump, { passive: false });
+} else {
+// For desktop, use click events
+this.canvas.addEventListener('click', handleJump);
+}
+
+// Keyboard controls for all devices
+document.addEventListener('keydown', (e) => {
+if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
+e.preventDefault();
+e.stopPropagation();
+handleJump(e);
+}
+});
+}
+
+setupShopScrolling() {
+const charactersGrid = document.getElementById('charactersGrid');
+
+// Remove custom touch handling and let browser handle scrolling naturally
+// This will provide smooth scrolling on mobile devices
+charactersGrid.style.overflowY = 'auto';
+charactersGrid.style.overflowX = 'hidden';
+charactersGrid.style.webkitOverflowScrolling = 'touch';
+}
+
+handleTap() {
+// This method is no longer used, but kept for compatibility
+}
+
+activateCharacterPower() {
+const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
+if (!character) return;
+
+const powerIndicator = document.getElementById('powerIndicator');
+
+switch (character.powerId) {
+case 'doubleCoins':
+// KP Oli: Double coins for first 5 pipes
+this.player.doubleCoinsActive = true;
+this.player.doubleCoinsCount = 5;
+powerIndicator.textContent = 'Double Coins: 5';
+powerIndicator.style.display = 'flex';
+break;
+
+case 'coinMagnet':
+// Sher Bahadur: Coin magnet - attracts nearby coins
+this.player.coinMagnetActive = true;
+document.getElementById('coinMagnetEffect').style.display = 'block';
+powerIndicator.textContent = 'Coin Magnet Active';
+powerIndicator.style.display = 'flex';
+break;
+
+case 'shield':
+// Prachanda: Shield - blocks one collision
+this.player.shieldActive = true;
+document.getElementById('shieldEffect').style.display = 'block';
+powerIndicator.textContent = 'Shield Active';
+powerIndicator.style.display = 'flex';
+break;
+
+case 'invincibility':
+// Mahesh Basnet: 3 seconds invincibility at start
+this.player.invincible = true;
+document.getElementById('invincibilityEffect').style.display = 'block';
+powerIndicator.textContent = 'Invincibility: 3s';
+powerIndicator.style.display = 'flex';
+
+setTimeout(() => {
+this.player.invincible = false;
+document.getElementById('invincibilityEffect').style.display = 'none';
+powerIndicator.style.display = 'none';
+}, 3000);
+break;
+
+case 'extraPoints':
+// Gagan Thapa: Extra points per pipe
+this.player.extraPointsActive = true;
+powerIndicator.textContent = 'Double Points';
+powerIndicator.style.display = 'flex';
+break;
+
+case 'respawn':
+// Balen: One-time respawn ability
+this.player.respawnAvailable = true;
+powerIndicator.textContent = 'Respawn Available';
+powerIndicator.style.display = 'flex';
+break;
+}
+
+this.soundManager.play('powerUp');
+}
+
+startGame() {
+this.state = GameState.READY;
+this.score = 0;
+this.sessionCoins = 0;
+this.lastVoiceLineScore = 0;
+this.pipes = [];
+this.coins = [];
+this.gameSpeed = GAME_CONFIG.PIPE_SPEED;
+this.frameCount = 0;
+
+// Reset player position and powers
+this.player.reset(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
+this.player.resetPowers();
+
+// Show game UI
+document.getElementById('menuScreen').style.display = 'none';
+document.getElementById('shopScreen').style.display = 'none';
+document.getElementById('settingsScreen').style.display = 'none';
+document.getElementById('gameUI').style.display = 'block';
+document.getElementById('gameOverScreen').style.display = 'none';
+document.getElementById('tapToBegin').style.display = 'block';
+document.getElementById('invincibilityEffect').style.display = 'none';
+document.getElementById('coinMagnetEffect').style.display = 'none';
+document.getElementById('shieldEffect').style.display = 'none';
+
+// Update displays
+document.getElementById('scoreDisplay').textContent = '0';
+document.getElementById('coinCounter').textContent = '0';
+document.getElementById('powerIndicator').style.display = 'none';
+
+// Start background music
+this.soundManager.bgMusic.play();
+}
+
+restartGame() {
+this.startGame();
+}
+
+backToMenu() {
+this.state = GameState.MENU;
+document.getElementById('gameOverScreen').style.display = 'none';
+document.getElementById('gameUI').style.display = 'none';
+document.getElementById('invincibilityEffect').style.display = 'none';
+document.getElementById('coinMagnetEffect').style.display = 'none';
+document.getElementById('shieldEffect').style.display = 'none';
+document.getElementById('menuScreen').style.display = 'flex';
+
+// Stop background music
+this.soundManager.bgMusic.stop();
+
+this.updateUI();
+}
+
+openShop() {
+this.state = GameState.SHOP;
+document.getElementById('menuScreen').style.display = 'none';
+document.getElementById('shopScreen').style.display = 'block';
+this.renderShop();
+}
+
+closeShop() {
+this.state = GameState.MENU;
+document.getElementById('shopScreen').style.display = 'none';
+document.getElementById('menuScreen').style.display = 'flex';
+}
+
+openSettings() {
+this.state = GameState.SETTINGS;
+document.getElementById('menuScreen').style.display = 'none';
+document.getElementById('settingsScreen').style.display = 'flex';
+
+// Update toggle states
+document.getElementById('musicToggle').classList.toggle('active', this.soundManager.musicEnabled);
+document.getElementById('soundToggle').classList.toggle('active', this.soundManager.soundEnabled);
+}
+
+closeSettings() {
+this.state = GameState.MENU;
+document.getElementById('settingsScreen').style.display = 'none';
+document.getElementById('menuScreen').style.display = 'flex';
+}
+
+renderShop() {
+const grid = document.getElementById('charactersGrid');
+grid.innerHTML = '';
+
+CHARACTERS.forEach(character => {
+const isUnlocked = this.unlockedCharacters.includes(character.id);
+const isSelected = this.selectedCharacter === character.id;
+
+const card = document.createElement('div');
+card.className = 'character-card';
+
+card.innerHTML = `
+<div class="character-image">
+<img src="assets/characters/${character.id}.png" alt="${character.name}">
+</div>
+<div class="character-name">${character.name}</div>
+<div class="character-power">${character.power}</div>
+<div class="character-price">
+${!isUnlocked ? `<span>🪙 ${character.price}</span>` : '<span>✅ Unlocked</span>'}
+</div>
+<button class="btn-character ${!isUnlocked ? 'btn-buy' : isSelected ? 'btn-selected' : 'btn-select'}"
+data-character="${character.id}">
+${!isUnlocked ? 'Buy' : isSelected ? 'Selected' : 'Select'}
+</button>
+`;
+
+grid.appendChild(card);
+});
+
+// Add event listeners to character buttons
+document.querySelectorAll('.btn-character').forEach(btn => {
+btn.addEventListener('click', (e) => {
+e.stopPropagation(); // Prevent event from bubbling up to the scroll container
+const characterId = e.target.dataset.character;
+const character = CHARACTERS.find(c => c.id === characterId);
+
+if (this.unlockedCharacters.includes(characterId)) {
+// Select character
+this.selectedCharacter = characterId;
+this.player.setCharacter(characterId);
+this.saveGameData();
+this.renderShop();
+this.updateMenuCharacterPreview();
+} else if (this.totalCoins >= character.price) {
+// Buy character
+this.totalCoins -= character.price;
+this.unlockedCharacters.push(characterId);
+this.saveGameData();
+this.renderShop();
+this.updateUI();
+}
+});
+});
+
+// Update coin display
+document.getElementById('shopCoins').textContent = this.totalCoins;
+}
+
+updateMenuCharacterPreview() {
+const preview = document.getElementById('menuCharacterPreview');
+preview.innerHTML = `<img src="assets/characters/${this.selectedCharacter}.png" alt="Character">`;
+}
+
+updateUI() {
+document.getElementById('bestScore').textContent = this.bestScore;
+document.getElementById('totalCoins').textContent = this.totalCoins;
+this.updateMenuCharacterPreview();
+}
+
+gameLoop() {
+this.update();
+this.render();
+requestAnimationFrame(() => this.gameLoop());
+}
+
+update() {
+if (this.state !== GameState.PLAYING && this.state !== GameState.READY) return;
+
+this.frameCount++;
+
+// Update background
+this.updateBackground();
+
+// Update player
+this.player.update(this.state === GameState.PLAYING);
+
+// Generate pipes
+if (this.state === GameState.PLAYING && this.frameCount % 90 === 0) {
+const gap = GAME_CONFIG.PIPE_GAP - Math.min(this.score * 0.5, 50);
+const pipeY = 100 + Math.random() * (GAME_CONFIG.CANVAS_HEIGHT - gap - 200);
+
+// Create top and bottom pipes
+this.pipes.push(new Pipe(GAME_CONFIG.CANVAS_WIDTH, 0, pipeY, true)); // Top pipe
+this.pipes.push(new Pipe(GAME_CONFIG.CANVAS_WIDTH, pipeY + gap, GAME_CONFIG.CANVAS_HEIGHT - pipeY - gap, false)); // Bottom pipe
+
+// Create coin in the middle of the gap
+this.coins.push(new Coin(GAME_CONFIG.CANVAS_WIDTH + GAME_CONFIG.PIPE_WIDTH / 2, pipeY + gap / 2));
+}
+
+// Update pipes
+this.pipes = this.pipes.filter(pipe => {
+pipe.update(this.gameSpeed);
+
+// Check if player passed the pipe (only check for top pipes)
+if (pipe.isTop && !pipe.passed && pipe.x + pipe.width < this.player.x) {
+pipe.passed = true;
+
+// Update score with character power
+const points = this.player.extraPointsActive ? 2 : 1;
+this.score += points;
+
+// Update score display
+document.getElementById('scoreDisplay').textContent = this.score;
+
+// Check if it's time to play a voice line (every 5 pipes)
+if (this.score - this.lastVoiceLineScore >= GAME_CONFIG.VOICE_LINE_INTERVAL) {
+this.playCharacterVoiceLine();
+this.lastVoiceLineScore = this.score;
+}
+
+// Increase difficulty
+if (this.score % 5 === 0) {
+this.gameSpeed += 0.2;
+}
+
+// Update character power counters
+if (this.player.doubleCoinsActive) {
+this.player.doubleCoinsCount--;
+const powerIndicator = document.getElementById('powerIndicator');
+powerIndicator.textContent = `Double Coins: ${this.player.doubleCoinsCount}`;
+
+if (this.player.doubleCoinsCount <= 0) {
+this.player.doubleCoinsActive = false;
+powerIndicator.style.display = 'none';
+}
+}
+}
+
+// Check collision
+if (!this.player.invincible && this.checkPipeCollision(this.player, pipe)) {
+this.handleCollision();
+}
+
+return pipe.x + pipe.width > 0;
+});
+
+// Update coins with coin magnet effect
+this.coins = this.coins.filter(coin => {
+coin.update(this.gameSpeed);
+
+// Apply coin magnet effect if active
+if (this.player.coinMagnetActive) {
+const playerCenterX = this.player.x + this.player.size / 2;
+const playerCenterY = this.player.y + this.player.size / 2;
+const distance = Math.sqrt(
+Math.pow(playerCenterX - coin.x, 2) +
+Math.pow(playerCenterY - coin.y, 2)
+);
+
+// If coin is within magnet range, attract it to player
+if (distance < GAME_CONFIG.COIN_MAGNET_RANGE) {
+const angle = Math.atan2(playerCenterY - coin.y, playerCenterX - coin.x);
+coin.x += Math.cos(angle) * 5;
+coin.y += Math.sin(angle) * 5;
+}
+}
+
+// Check if player collected the coin
+if (!coin.collected && this.checkCoinCollision(this.player, coin)) {
+coin.collect();
+
+// Apply character power
+const coinsEarned = this.player.doubleCoinsActive ? 2 : 1;
+this.sessionCoins += coinsEarned;
+this.totalCoins += coinsEarned;
+this.showCoinIndicator(coinsEarned);
+document.getElementById('coinCounter').textContent = this.sessionCoins;
+this.saveGameData();
+this.soundManager.play('coin');
+}
+
+return coin.x + coin.radius > 0 && !coin.collected;
+});
+
+// Check boundaries
+if (!this.player.invincible && (this.player.y < 0 || this.player.y + this.player.size > GAME_CONFIG.CANVAS_HEIGHT)) {
+this.handleCollision();
+}
+}
+
+playCharacterVoiceLine() {
+const voicePlayed = this.soundManager.playVoiceLine(this.selectedCharacter);
+
+if (voicePlayed) {
+// Show voice indicator
+const voiceIndicator = document.getElementById('voiceIndicator');
+voiceIndicator.classList.add('show');
+
+// Hide after 2 seconds
+setTimeout(() => {
+voiceIndicator.classList.remove('show');
+}, 2000);
+}
+}
+
+handleCollision() {
+const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
+
+// Check if Prachanda has shield ability
+if (character && character.powerId === 'shield' && this.player.shieldActive) {
+// Use shield ability
+this.player.shieldActive = false;
+document.getElementById('shieldEffect').style.display = 'none';
+
+// Update power indicator
+const powerIndicator = document.getElementById('powerIndicator');
+powerIndicator.textContent = 'Shield Used';
+
+// Play shield sound
+this.soundManager.play('shield');
+
+// Make player briefly invincible
+this.player.invincible = true;
+document.getElementById('invincibilityEffect').style.display = 'block';
+
+setTimeout(() => {
+this.player.invincible = false;
+document.getElementById('invincibilityEffect').style.display = 'none';
+}, 1000);
+}
+// Check if Balen has respawn ability
+else if (character && character.powerId === 'respawn' && this.player.respawnAvailable) {
+// Use respawn ability
+this.player.respawnAvailable = false;
+this.player.respawn(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
+
+// Update power indicator
+const powerIndicator = document.getElementById('powerIndicator');
+powerIndicator.textContent = 'Respawn Used';
+
+// Play respawn sound
+this.soundManager.play('respawn');
+
+// Make player briefly invincible
+this.player.invincible = true;
+document.getElementById('invincibilityEffect').style.display = 'block';
+
+setTimeout(() => {
+this.player.invincible = false;
+document.getElementById('invincibilityEffect').style.display = 'none';
+}, 1000);
+} else {
+// Regular game over
+this.gameOver();
+}
+}
+
+updateBackground() {
+// Update clouds
+this.clouds.forEach(cloud => {
+cloud.x -= cloud.speed;
+if (cloud.x + cloud.width < 0) {
+cloud.x = GAME_CONFIG.CANVAS_WIDTH;
+}
+});
+
+// Update buildings
+this.buildings.forEach(building => {
+building.x -= GAME_CONFIG.BUILDING_SPEED;
+if (building.x + building.width < 0) {
+building.x = GAME_CONFIG.CANVAS_WIDTH + Math.random() * 100;
+building.width = 60 + Math.random() * 40;
+building.height = 100 + Math.random() * 150;
+building.y = GAME_CONFIG.CANVAS_HEIGHT - building.height;
+building.color = `hsl(${200 + Math.random() * 40}, 20%, ${30 + Math.random() * 20}%)`;
+}
+});
+}
+
+render() {
+// Clear canvas
+this.ctx.clearRect(0, 0, GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.CANVAS_HEIGHT);
+
+if (this.state === GameState.PLAYING || this.state === GameState.READY) {
+// Draw background
+this.drawBackground();
+
+// Draw pipes
+this.pipes.forEach(pipe => pipe.draw(this.ctx));
+
+// Draw coins
+this.coins.forEach(coin => coin.draw(this.ctx));
+
+// Draw player
+this.player.draw(this.ctx);
+}
+}
+
+drawBackground() {
+// Draw sky gradient
+const gradient = this.ctx.createLinearGradient(0, 0, 0, GAME_CONFIG.CANVAS_HEIGHT);
+gradient.addColorStop(0, '#87CEEB');
+gradient.addColorStop(1, '#98D8E8');
+this.ctx.fillStyle = gradient;
+this.ctx.fillRect(0, 0, GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.CANVAS_HEIGHT);
+
+// Draw clouds
+this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+this.clouds.forEach(cloud => {
+this.drawCloud(cloud.x, cloud.y, cloud.width, cloud.height);
+});
+
+// Draw buildings
+this.buildings.forEach(building => {
+this.drawBuilding(building.x, building.y, building.width, building.height, building.color);
+});
+}
+
+drawCloud(x, y, width, height) {
+this.ctx.beginPath();
+this.ctx.arc(x + width * 0.25, y + height * 0.5, height * 0.5, 0, Math.PI * 2);
+this.ctx.arc(x + width * 0.5, y + height * 0.5, height * 0.6, 0, Math.PI * 2);
+this.ctx.arc(x + width * 0.75, y + height * 0.5, height * 0.5, 0, Math.PI * 2);
+this.ctx.fill();
+}
+
+drawBuilding(x, y, width, height, color) {
+// Building body
+this.ctx.fillStyle = color;
+this.ctx.fillRect(x, y, width, height);
+
+// Windows
+this.ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
+const windowWidth = width * 0.15;
+const windowHeight = height * 0.1;
+const windowSpacingX = width * 0.25;
+const windowSpacingY = height * 0.2;
+
+for (let row = 0; row < Math.floor(height / (windowHeight + windowSpacingY)); row++) {
+for (let col = 0; col < Math.floor(width / (windowWidth + windowSpacingX)); col++) {
+const windowX = x + col * (windowWidth + windowSpacingX) + windowSpacingX / 2;
+const windowY = y + row * (windowHeight + windowSpacingY) + windowSpacingY / 2;
+this.ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
+}
+}
+}
+
+checkPipeCollision(player, pipe) {
+const playerLeft = player.x;
+const playerRight = player.x + player.size;
+const playerTop = player.y;
+const playerBottom = player.y + player.size;
+
+const pipeLeft = pipe.x;
+const pipeRight = pipe.x + pipe.width;
+const pipeTop = pipe.y;
+const pipeBottom = pipe.y + pipe.height;
+
+// Check if player is within pipe x range
+if (playerRight > pipeLeft && playerLeft < pipeRight) {
+// Check if player hits the pipe
+if (playerTop < pipeBottom && playerBottom > pipeTop) {
+return true;
+}
+}
+
+return false;
+}
+
+checkCoinCollision(player, coin) {
+const playerCenterX = player.x + player.size / 2;
+const playerCenterY = player.y + player.size / 2;
+
+const distance = Math.sqrt(
+Math.pow(playerCenterX - coin.x, 2) +
+Math.pow(playerCenterY - coin.y, 2)
+);
+
+return distance < player.size / 2 + coin.radius;
+}
+
+showCoinIndicator(amount) {
+const indicator = document.getElementById('coinIndicator');
+indicator.textContent = `+${amount} 🪙`;
+indicator.classList.add('show');
+setTimeout(() => {
+indicator.classList.remove('show');
+}, 1000);
+}
+
+gameOver() {
+this.state = GameState.GAME_OVER;
+
+// Stop background music
+this.soundManager.bgMusic.stop();
+
+// Update best score
+if (this.score > this.bestScore) {
+this.bestScore = this.score;
+}
+
+// Calculate bonus coins
+const bonusCoins = Math.floor(this.score / GAME_CONFIG.BONUS_COINS_INTERVAL) * GAME_CONFIG.BONUS_COINS_AMOUNT;
+const totalCoinsEarned = this.sessionCoins + bonusCoins;
+this.totalCoins += bonusCoins;
+
+// Save data
+this.saveGameData();
+
+// Check if character is Balen
+const character = CHARACTERS.find(c => c.id === this.selectedCharacter);
+const gameOverTitle = document.getElementById('gameOverTitle');
+
+if (character && character.isLegend) {
+// Show "Legend Never Dies" for Balen
+gameOverTitle.textContent = "Legend Never Dies";
+} else {
+// Show "स्वाहा" for other characters
+gameOverTitle.textContent = "स्वाहा";
+}
+
+// Play game over sound
+this.soundManager.play('gameOver');
+
+// Show game over screen
+document.getElementById('finalScore').textContent = this.score;
+document.getElementById('coinsEarned').textContent = totalCoinsEarned;
+document.getElementById('gameOverScreen').style.display = 'flex';
+}
+
+saveGameData() {
+const gameData = {
+bestScore: this.bestScore,
+totalCoins: this.totalCoins,
+selectedCharacter: this.selectedCharacter,
+unlockedCharacters: this.unlockedCharacters
+};
+localStorage.setItem('flappyNetaData', JSON.stringify(gameData));
+}
+
+loadGameData() {
+const savedData = localStorage.getItem('flappyNetaData');
+if (savedData) {
+const gameData = JSON.parse(savedData);
+this.bestScore = gameData.bestScore || 0;
+this.totalCoins = gameData.totalCoins || 0;
+this.selectedCharacter = gameData.selectedCharacter || 'kp_oli';
+this.unlockedCharacters = gameData.unlockedCharacters || ['kp_oli'];
+}
+}
+}
+
+// Player Class
+class Player {
+constructor(x, y, characterId) {
+this.x = x;
+this.y = y;
+this.size = GAME_CONFIG.PLAYER_SIZE;
+this.velocity = 0;
+this.characterId = characterId;
+this.rotation = 0;
+this.idleOffset = 0;
+this.image = new Image();
+this.image.src = `assets/characters/${characterId}.png`;
+
+// Character powers
+this.doubleCoinsActive = false;
+this.doubleCoinsCount = 0;
+this.coinMagnetActive = false;
+this.shieldActive = false;
+this.gravityMultiplier = 1;
+this.invincible = false;
+this.extraPointsActive = false;
+this.respawnAvailable = false;
+this.respawnX = x; // Store respawn position
+this.respawnY = y;
+}
+
+update(isPlaying) {
+if (isPlaying) {
+// Apply gravity with character modifier
+this.velocity += GAME_CONFIG.GRAVITY * this.gravityMultiplier;
+this.y += this.velocity;
+
+// Limit fall speed
+if (this.velocity > 10) {
+this.velocity = 10;
+}
+
+// Update rotation based on velocity
+this.rotation = Math.min(Math.max(this.velocity * 3, -30), 90);
+} else {
+// Idle animation - floating up and down
+this.idleOffset += 0.05;
+this.y = GAME_CONFIG.CANVAS_HEIGHT / 2 + Math.sin(this.idleOffset) * 10;
+this.rotation = 0;
+}
+}
+
+jump() {
+this.velocity = GAME_CONFIG.JUMP_STRENGTH;
+}
+
+reset(x, y) {
+this.x = x;
+this.y = y;
+this.velocity = 0;
+this.rotation = 0;
+this.idleOffset = 0;
+}
+
+resetPowers() {
+this.doubleCoinsActive = false;
+this.doubleCoinsCount = 0;
+this.coinMagnetActive = false;
+this.shieldActive = false;
+this.gravityMultiplier = 1;
+this.invincible = false;
+this.extraPointsActive = false;
+this.respawnAvailable = false;
+}
+
+respawn(x, y) {
+this.x = x;
+this.y = y;
+this.velocity = 0;
+this.rotation = 0;
+this.idleOffset = 0;
+// Store the respawn position for next time
+this.respawnX = x;
+this.respawnY = y;
+}
+
+setCharacter(characterId) {
+this.characterId = characterId;
+this.image.src = `assets/characters/${characterId}.png`;
+}
+
+draw(ctx) {
+ctx.save();
+ctx.translate(this.x + this.size / 2, this.y + this.size / 2);
+ctx.rotate(this.rotation * Math.PI / 180);
+
+// Draw character image
+ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+
+// Draw shield if active
+if (this.shieldActive) {
+ctx.strokeStyle = 'rgba(76, 175, 80, 0.7)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.arc(0, 0, this.size / 2 + 5, 0, Math.PI * 2);
+ctx.stroke();
+}
+
+// Draw invincibility effect
+if (this.invincible) {
+ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+ctx.beginPath();
+ctx.arc(0, 0, this.size / 2 + 10, 0, Math.PI * 2);
+ctx.fill();
+}
+
+ctx.restore();
+}
+}
+
+// Pipe Class
+class Pipe {
+constructor(x, y, height, isTop) {
+this.x = x;
+this.y = y;
+this.width = GAME_CONFIG.PIPE_WIDTH;
+this.height = height;
+this.isTop = isTop;
+this.passed = false;
+this.color = '#73BF2E'; // Classic Flappy Bird green
+}
+
+update(speed) {
+this.x -= speed;
+}
+
+draw(ctx) {
+const capHeight = 30;
+const capWidth = this.width + 10;
+const capX = this.x - 5;
+
+// Pipe body
+ctx.fillStyle = this.color;
+ctx.fillRect(this.x, this.y, this.width, this.height);
+
+// Pipe cap
+if (this.isTop) {
+// Top pipe cap at the bottom of the pipe
+ctx.fillRect(capX, this.y + this.height - capHeight, capWidth, capHeight);
+} else {
+// Bottom pipe cap at the top of the pipe
+ctx.fillRect(capX, this.y, capWidth, capHeight);
+}
+
+// Pipe highlight
+ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+ctx.fillRect(this.x + 5, this.y, 10, this.height);
+
+// Pipe border
+ctx.strokeStyle = '#5A8E1F';
+ctx.lineWidth = 2;
+ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+if (this.isTop) {
+ctx.strokeRect(capX, this.y + this.height - capHeight, capWidth, capHeight);
+} else {
+ctx.strokeRect(capX, this.y, capWidth, capHeight);
+}
+}
+}
+
+// Coin Class
+class Coin {
+constructor(x, y) {
+this.x = x;
+this.y = y;
+this.radius = 15;
+this.collected = false;
+this.rotation = 0;
+this.floatOffset = 0;
+this.scale = 1;
+this.collectAnimation = 0;
+}
+
+update(speed) {
+if (!this.collected) {
+this.x -= speed;
+this.rotation += 0.05;
+this.floatOffset += 0.05;
+this.scale = 1 + Math.sin(this.floatOffset) * 0.1;
+} else {
+// Collection animation
+this.collectAnimation += 0.1;
+this.scale += 0.2;
+this.radius += 1;
+if (this.collectAnimation > 1) {
+this.collected = true; // Will be filtered out
+}
+}
+}
+
+collect() {
+this.collected = true;
+}
+
+draw(ctx) {
+if (this.collectAnimation > 0) {
+ctx.globalAlpha = 1 - this.collectAnimation;
+}
+
+ctx.save();
+ctx.translate(this.x, this.y);
+ctx.rotate(this.rotation);
+ctx.scale(this.scale, this.scale);
+
+// Coin glow
+const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+gradient.addColorStop(0, '#FFD700');
+gradient.addColorStop(0.7, '#FFC107');
+gradient.addColorStop(1, 'rgba(255, 193, 7, 0.3)');
+
+// Draw coin
+ctx.fillStyle = gradient;
+ctx.beginPath();
+ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+ctx.fill();
+
+// Coin border
+ctx.strokeStyle = '#FF8F00';
+ctx.lineWidth = 2;
+ctx.stroke();
+
+// Coin symbol
+ctx.fillStyle = '#FF8F00';
+ctx.font = 'bold 12px Arial';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('🪙', 0, 0);
+
+ctx.restore();
+
+if (this.collectAnimation > 0) {
+ctx.globalAlpha = 1;
+}
+}
+}
+
+// Initialize game when page loads
+window.addEventListener('load', () => {
+const game = new FlappyNeta();
+});
+</script></body>
 </html>
+
+
