@@ -288,7 +288,6 @@
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
-            /* Removed transform properties that might interfere with scrolling */
         }
 
         .characters-grid::-webkit-scrollbar {
@@ -1102,7 +1101,9 @@
                 // Flag to prevent double jump
                 let isJumping = false;
                 
-                const handleJump = () => {
+                const handleJump = (e) => {
+                    e.preventDefault();
+                    
                     if (isJumping) return;
                     isJumping = true;
                     
@@ -1127,10 +1128,7 @@
                 };
                 
                 // Touch events for mobile
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    handleJump();
-                }, { passive: false });
+                this.canvas.addEventListener('touchstart', handleJump, { passive: false });
                 
                 // Click events for desktop
                 this.canvas.addEventListener('click', handleJump);
@@ -1139,7 +1137,7 @@
                 document.addEventListener('keydown', (e) => {
                     if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
                         e.preventDefault();
-                        handleJump();
+                        handleJump(e);
                     }
                 });
             }
@@ -1155,19 +1153,7 @@
             }
 
             handleTap() {
-                if (this.state === GameState.READY) {
-                    // Start the game
-                    this.state = GameState.PLAYING;
-                    document.getElementById('tapToBegin').style.display = 'none';
-                    this.player.jump();
-                    this.soundManager.play('jump');
-                    
-                    // Activate character special power
-                    this.activateCharacterPower();
-                } else if (this.state === GameState.PLAYING) {
-                    this.player.jump();
-                    this.soundManager.play('jump');
-                }
+                // This method is no longer used, but kept for compatibility
             }
 
             activateCharacterPower() {
@@ -1549,7 +1535,7 @@
                 else if (character && character.powerId === 'respawn' && this.player.respawnAvailable) {
                     // Use respawn ability
                     this.player.respawnAvailable = false;
-                    this.player.reset(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
+                    this.player.respawn(GAME_CONFIG.CANVAS_WIDTH / 4, GAME_CONFIG.CANVAS_HEIGHT / 2);
                     
                     // Update power indicator
                     const powerIndicator = document.getElementById('powerIndicator');
@@ -1789,6 +1775,8 @@
                 this.invincible = false;
                 this.extraPointsActive = false;
                 this.respawnAvailable = false;
+                this.respawnX = x; // Store respawn position
+                this.respawnY = y;
             }
 
             update(isPlaying) {
@@ -1835,6 +1823,17 @@
                 this.respawnAvailable = false;
             }
 
+            respawn(x, y) {
+                this.x = x;
+                this.y = y;
+                this.velocity = 0;
+                this.rotation = 0;
+                this.idleOffset = 0;
+                // Store the respawn position for next time
+                this.respawnX = x;
+                this.respawnY = y;
+            }
+
             setCharacter(characterId) {
                 this.characterId = characterId;
                 this.image.src = `assets/characters/${characterId}.png`;
@@ -1848,7 +1847,7 @@
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
                 
-             
+              
                 
                 ctx.restore();
             }
