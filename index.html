@@ -48,6 +48,7 @@
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            touch-action: none;
         }
 
         /* Main Menu */
@@ -64,6 +65,7 @@
             align-items: center;
             z-index: 20;
             padding: 20px;
+            touch-action: none;
         }
 
         .game-title {
@@ -166,6 +168,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            touch-action: none;
         }
 
         .settings-title {
@@ -241,6 +244,7 @@
             padding: 20px;
             display: none;
             overflow: hidden;
+            touch-action: none;
         }
 
         .shop-content {
@@ -284,9 +288,7 @@
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
-            /* Added to ensure proper scrolling on iOS */
-            transform: translateZ(0);
-            will-change: transform;
+            /* Removed transform properties that might interfere with scrolling */
         }
 
         .characters-grid::-webkit-scrollbar {
@@ -1089,56 +1091,70 @@
                     toggle.classList.toggle('active', enabled);
                 });
                 
-                // Game controls - with proper touch event handling
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.handleTap();
-                }, { passive: false });
-                
-                this.canvas.addEventListener('click', () => this.handleTap());
-                
-                // Keyboard controls (for desktop testing)
-                document.addEventListener('keydown', (e) => {
-                    if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
-                        e.preventDefault();
-                        this.handleTap();
-                    }
-                });
+                // Game controls - prevent double events
+                this.setupGameControls();
                 
                 // Shop scroll handling
                 this.setupShopScrolling();
             }
 
+            setupGameControls() {
+                // Flag to prevent double jump
+                let isJumping = false;
+                
+                const handleJump = () => {
+                    if (isJumping) return;
+                    isJumping = true;
+                    
+                    if (this.state === GameState.READY) {
+                        // Start the game
+                        this.state = GameState.PLAYING;
+                        document.getElementById('tapToBegin').style.display = 'none';
+                        this.player.jump();
+                        this.soundManager.play('jump');
+                        
+                        // Activate character special power
+                        this.activateCharacterPower();
+                    } else if (this.state === GameState.PLAYING) {
+                        this.player.jump();
+                        this.soundManager.play('jump');
+                    }
+                    
+                    // Reset jump flag after a short delay
+                    setTimeout(() => {
+                        isJumping = false;
+                    }, 100);
+                };
+                
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    handleJump();
+                }, { passive: false });
+                
+                // Click events for desktop
+                this.canvas.addEventListener('click', handleJump);
+                
+                // Keyboard controls
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' && (this.state === GameState.PLAYING || this.state === GameState.READY)) {
+                        e.preventDefault();
+                        handleJump();
+                    }
+                });
+            }
+
             setupShopScrolling() {
                 const charactersGrid = document.getElementById('charactersGrid');
-                let startY = 0;
-                let currentY = 0;
-                let isScrolling = false;
                 
-                // Touch events for mobile scrolling
-                charactersGrid.addEventListener('touchstart', (e) => {
-                    startY = e.touches[0].pageY;
-                    isScrolling = true;
-                }, { passive: true });
-                
-                charactersGrid.addEventListener('touchmove', (e) => {
-                    if (!isScrolling) return;
-                    
-                    currentY = e.touches[0].pageY;
-                    const diff = startY - currentY;
-                    
-                    // Scroll the container
-                    charactersGrid.scrollTop += diff;
-                    startY = currentY;
-                }, { passive: true });
-                
-                charactersGrid.addEventListener('touchend', () => {
-                    isScrolling = false;
-                }, { passive: true });
+                // Remove custom touch handling and let browser handle scrolling naturally
+                // This will provide smooth scrolling on mobile devices
+                charactersGrid.style.overflowY = 'auto';
+                charactersGrid.style.overflowX = 'hidden';
+                charactersGrid.style.webkitOverflowScrolling = 'touch';
             }
 
             handleTap() {
-                // Remove jump cooldown - allow immediate response
                 if (this.state === GameState.READY) {
                     // Start the game
                     this.state = GameState.PLAYING;
@@ -1832,7 +1848,7 @@
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
                 
-              
+             
                 
                 ctx.restore();
             }
@@ -1969,11 +1985,6 @@
         window.addEventListener('load', () => {
             const game = new FlappyNeta();
         });
-
-        // Prevent default touch behavior only for game canvas, not shop
-        document.getElementById('gameCanvas').addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        }, { passive: false });
     </script>
 </body>
 </html>
