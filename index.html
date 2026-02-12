@@ -19,7 +19,6 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            /* Changed from touch-action: none to allow scrolling in shop */
             touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
@@ -96,6 +95,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             transition: all 0.2s;
             text-align: center;
+            touch-action: manipulation;
         }
 
         .btn:hover {
@@ -240,7 +240,6 @@
             z-index: 25;
             padding: 20px;
             display: none;
-            /* Changed from overflow: hidden to allow scrolling */
             overflow: hidden;
         }
 
@@ -284,7 +283,6 @@
             overflow-y: auto;
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
-            /* Added explicit touch action for vertical scrolling */
             touch-action: pan-y;
             /* Added to ensure proper scrolling on iOS */
             transform: translateZ(0);
@@ -301,7 +299,6 @@
             padding: 15px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            /* Removed transition and hover effects that interfere with touch scrolling */
         }
 
         .character-image {
@@ -348,7 +345,7 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
-            /* Removed transition that interferes with touch scrolling */
+            touch-action: manipulation;
         }
 
         .btn-buy {
@@ -1092,12 +1089,13 @@
                     toggle.classList.toggle('active', enabled);
                 });
                 
-                // Game controls
-                this.canvas.addEventListener('click', () => this.handleTap());
+                // Game controls - with proper touch event handling
                 this.canvas.addEventListener('touchstart', (e) => {
                     e.preventDefault();
                     this.handleTap();
-                });
+                }, { passive: false });
+                
+                this.canvas.addEventListener('click', () => this.handleTap());
                 
                 // Keyboard controls (for desktop testing)
                 document.addEventListener('keydown', (e) => {
@@ -1140,6 +1138,7 @@
             }
 
             handleTap() {
+                // Remove jump cooldown - allow immediate response
                 if (this.state === GameState.READY) {
                     // Start the game
                     this.state = GameState.PLAYING;
@@ -1832,6 +1831,8 @@
                 
                 // Draw character image
                 ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                
+              
                 
                 ctx.restore();
             }
